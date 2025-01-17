@@ -23,33 +23,38 @@
 \textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
 \midrule
 Date1 & Name(s) & Description of changes\\
-Date2 & Name(s) & Description of changes\\
-... & ... & ...\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{Problem Statement}
 
-\wss{You should check your problem statement with the
-\href{https://github.com/smiths/capTemplate/blob/main/docs/Checklists/ProbState-Checklist.pdf}
-{problem statement checklist}.} 
-
-\wss{You can change the section headings, as long as you include the required
-information.}
-
 \subsection{Problem}
+Microrobots are being explored in minimally invasive surgeries due to their ability to navigate millimeter spaces. The magnetic actuation systems used to control these microrobots suffer from bulkiness and can obstruct a surgeon's view. Electromagnetic actuators can also pose a safety risk due to the heat they emit as a result of the current they receive. 
+
+\subsection{Proposed Solution}
+We propose a design that places the actuation system under the operating table while only taking up limited space. We introduce optimization methods to solve the electromagnet (EM) arrangement problem leading to an E-optimal design (\textbf{TODO:} add appendix reference). 
 
 \subsection{Inputs and Outputs}
+\subsubsection{Inputs}
+The program will receive the volume of the under-the-table workspace and properties of the EMs (\# of turns, area, current). In addition, the user will input their desired number of EMs in the system and the sample size (a larger size leads to a more optimal solution).
 
-\wss{Characterize the problem in terms of ``high level'' inputs and outputs.  
-Use abstraction so that you can avoid details.}
+\subsubsection{Outputs}
+The program will output the optimal positions of the EM actuators. 
 
 \subsection{Stakeholders}
+\subsubsection{General Stakeholders}
+Surgeons and medical professionals that might operate an actuation system, engineers involved in the physical development of such systems, and researchers working on biomedical engineering systems and/or applications of optimization algorithms.
+
+\subsubsection{Specialized Stakeholders}
+Some specific stakeholders include Dr. Onaizah (HeART Lab), and Dr. Giamou (ARCO Lab).  
 
 \subsection{Environment}
+\subsubsection{Software}
+A working Python environment is required. The software is compatible with Windows, MacOS, and Linux.
 
-\wss{Hardware and software environment}
+\subsubsection{Hardware}
+More computing power will allow for more accurate results, but any personal computer should work. 
 
 \section{Goals}
 
