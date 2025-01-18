@@ -22,7 +22,7 @@
 \toprule
 \textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
 \midrule
-Date1 & Name(s) & Description of changes\\
+Jan.~17 & Hussein & Initial commit\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -33,7 +33,7 @@ Date1 & Name(s) & Description of changes\\
 Microrobots are being explored in minimally invasive surgeries due to their ability to navigate millimeter spaces. The magnetic actuation systems used to control these microrobots suffer from bulkiness and can obstruct a surgeon's view. Electromagnetic actuators can also pose a safety risk due to the heat they emit as a result of the current they receive. 
 
 \subsection{Proposed Solution}
-We propose a design that places the actuation system under the operating table while only taking up limited space. We introduce optimization methods to solve the electromagnet (EM) arrangement problem leading to an E-optimal design (\textbf{TODO:} add appendix reference). 
+We propose a design that places the actuation system under the operating table while only taking up limited space. We introduce optimization methods to solve the electromagnet (EM) arrangement problem leading to an \href{https://en.wikipedia.org/wiki/Optimal_experimental_design}{E-optimal design}. 
 
 \subsection{Inputs and Outputs}
 \subsubsection{Inputs}
@@ -47,52 +47,29 @@ The program will output the optimal positions of the EM actuators.
 Surgeons and medical professionals that might operate an actuation system, engineers involved in the physical development of such systems, and researchers working on biomedical engineering systems and/or applications of optimization algorithms.
 
 \subsubsection{Specialized Stakeholders}
-Some specific stakeholders include Dr. Onaizah (HeART Lab), and Dr. Giamou (ARCO Lab).  
+Some specific stakeholders include Dr.~Onaizah (HeART Lab), and Dr.~Giamou (ARCO Lab).  
 
 \subsection{Environment}
 \subsubsection{Software}
-A working Python environment is required. The software is compatible with Windows, MacOS, and Linux.
+The software is compatible with Windows, MacOS, and Linux.
 
 \subsubsection{Hardware}
-More computing power will allow for more accurate results, but any personal computer should work. 
+Any personal computer should work. 
 
 \section{Goals}
+\begin{itemize}
+    \item The program will provide a physically feasible arrangement of electromagnets that can fit in an under-the-table workspace.
+    \item The provided magnet arrangement will maximize the diversity of magnetic fields that can be generated, leading to increased control over the volume of the workspace. 
+\end{itemize}
 
 \section{Stretch Goals}
+\begin{itemize}
+    \item Accept different currents to independent EMs. 
+    \item Allow for different kinds of EMs within the same workspace.
+    \item Optimize individual EM angular configuration. 
+\end{itemize}
 
 \section{Challenge Level and Extras}
-
-\wss{State your expected challenge level (advanced, general or basic).  The
-challenge can come through the required domain knowledge, the implementation or
-something else.  Usually the greater the novelty of a project the greater its
-challenge level.  You should include your rationale for the selected level.
-Approval of the level will be part of the discussion with the instructor for
-approving the project.  The challenge level, with the approval (or request) of
-the instructor, can be modified over the course of the term.}
-
-\wss{Teams may wish to include extras as either potential bonus grades, or to
-make up for a less advanced challenge level.  Potential extras include usability
-testing, code walkthroughs, user documentation, formal proof, GenderMag
-personas, Design Thinking, etc.  Normally the maximum number of extras will be
-two.  Approval of the extras will be part of the discussion with the instructor
-for approving the project.  The extras, with the approval (or request) of the
-instructor, can be modified over the course of the term.}
-
-\newpage{}
-
-\section*{Appendix --- Reflection}
-
-\wss{Not required for CAS 741}
-
-\input{../Reflection.tex}
-
-\begin{enumerate}
-    \item What went well while writing this deliverable? 
-    \item What pain points did you experience during this deliverable, and how
-    did you resolve them?
-    \item How did you and your team adjust the scope of your goals to ensure
-    they are suitable for a Capstone project (not overly ambitious but also of
-    appropriate complexity for a senior design project)?
-\end{enumerate}  
+This project would be considered an \textbf{advanced} project as it is a continuation of research work submitted to ICRA 2025, and involves a novel approach to solving the magnet arrangement problem. 
 
 \end{document}
