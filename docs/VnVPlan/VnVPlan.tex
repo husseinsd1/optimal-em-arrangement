@@ -1,8 +1,22 @@
 \documentclass[12pt, titlepage]{article}
 
-\usepackage{booktabs}
-\usepackage{tabularx}
+\usepackage{amsmath, mathtools}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{colortbl}
+\usepackage{xr}
 \usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{xfrac}
+\usepackage{tabularx}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{pdflscape}
+\usepackage{afterpage}
+\usepackage[table,xcdraw]{xcolor}
 \hypersetup{
     colorlinks,
     citecolor=blue,
@@ -14,6 +28,17 @@
 
 \input{../Comments}
 \input{../Common}
+
+% For easy change of table widths
+\newcommand{\colZwidth}{1.0\textwidth}
+\newcommand{\colAwidth}{0.13\textwidth}
+\newcommand{\colBwidth}{0.82\textwidth}
+\newcommand{\colCwidth}{0.1\textwidth}
+\newcommand{\colDwidth}{0.05\textwidth}
+\newcommand{\colEwidth}{0.8\textwidth}
+\newcommand{\colFwidth}{0.17\textwidth}
+\newcommand{\colGwidth}{0.5\textwidth}
+\newcommand{\colHwidth}{0.28\textwidth}
 
 \begin{document}
 
@@ -27,39 +52,17 @@
 
 \section*{Revision History}
 
-\begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
+\begin{tabularx}{\textwidth}{p{3.5cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
-Date 1 & 1.0 & Notes\\
-Date 2 & 1.1 & Notes\\
+February 23, 2025 & 1.0 & Initial draft\\
 \bottomrule
 \end{tabularx}
 
-~\\
-\wss{The intention of the VnV plan is to increase confidence in the software.
-However, this does not mean listing every verification and validation technique
-that has ever been devised.  The VnV plan should also be a \textbf{feasible}
-plan. Execution of the plan should be possible with the time and team available.
-If the full plan cannot be completed during the time available, it can either be
-modified to ``fake it'', or a better solution is to add a section describing
-what work has been completed and what work is still planned for the future.}
-
-\wss{The VnV plan is typically started after the requirements stage, but before
-the design stage.  This means that the sections related to unit testing cannot
-initially be completed.  The sections will be filled in after the design stage
-is complete.  the final version of the VnV plan should have all sections filled
-in.}
 
 \newpage
 
 \tableofcontents
-
-\listoftables
-\wss{Remove this section if it isn't needed}
-
-\listoffigures
-\wss{Remove this section if it isn't needed}
-
 \newpage
 
 \section{Symbols, Abbreviations, and Acronyms}
@@ -70,294 +73,264 @@ in.}
   \textbf{symbol} & \textbf{description}\\
   \midrule 
   T & Test\\
+  EM & Electromagnet\\
+  VnV & Verification and Validation \\
+  SRS & Software Requirements Specification \\
+  PV & Positive value required \\
+  TL & Input parameter too large \\
   \bottomrule
+  \label{abbrevs}
 \end{tabular}\\
-
-\wss{symbols, abbreviations, or acronyms --- you can simply reference the SRS
-  \citep{SRS} tables, if appropriate}
-
-\wss{Remove this section if it isn't needed}
 
 \newpage
 
 \pagenumbering{arabic}
 
-This document ... \wss{provide an introductory blurb and roadmap of the
-  Verification and Validation plan}
+This document provides the road-map of the verification and validation plan for Optimal EM Placement. The plan ensures the requirements and models in the SRS document are correctly implemented. It starts with introducing general information about the program in Section \ref{gen_info}, followed by a plan, and then an outline of system tests in Section \ref{sys_tests}. Finally, a description of unit tests for functional and non-functional requirements is provided in Section \ref{unit_tests}.
 
-\section{General Information}
+\section{General Information} \label{gen_info}
 
 \subsection{Summary}
-
-\wss{Say what software is being tested.  Give its name and a brief overview of
-  its general functions.}
+This document outlines the verification and validation plan for Optimal EM Placement, a program that calculates the optimal positions of EM actuators that yield the highest system manipulability, as defined in the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. 
 
 \subsection{Objectives}
-
-\wss{State what is intended to be accomplished.  The objective will be around
-  the qualities that are most important for your project.  You might have
-  something like: ``build confidence in the software correctness,''
-  ``demonstrate adequate usability.'' etc.  You won't list all of the qualities,
-  just those that are most important.}
-
-\wss{You should also list the objectives that are out of scope.  You don't have 
-the resources to do everything, so what will you be leaving out.  For instance, 
-if you are not going to verify the quality of usability, state this.  It is also 
-worthwhile to justify why the objectives are left out.}
-
-\wss{The objectives are important because they highlight that you are aware of 
-limitations in your resources for verification and validation.  You can't do everything, 
-so what are you going to prioritize?  As an example, if your system depends on an 
-external library, you can explicitly state that you will assume that external library 
-has already been verified by its implementation team.}
+The main purpose of this document is to define how validation will be performed for the requirements outlined in the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS} document. The verification plan includes strategies to ensure the correct execution of system requirements testing. In particular, the VnV document devises procedures to confirm that intermediate data and computations are approximately correct, and conform to the theoretical expectations laid out in the SRS. The optimal EM positions are solved for by the \href{https://www.cvxpy.org/}{$\texttt{cvxpy}$} library --- a popular open-source convex optimization library --- which is assumed to be reliable and correct for the purposes of this project. In general, we aim to build maximum confidence in the correctness of our program. Additionally, the document outlines methods to verify that the input interface and output format are sufficiently accessible and interpretable by the intended users, as defined in the SRS. However, extensive usability verifications, beyond what is necessary for the outlined user backgrounds, is not within scope of this project.
 
 \subsection{Challenge Level and Extras}
-
-\wss{State the challenge level (advanced, general, basic) for your project.
-Your challenge level should exactly match what is included in your problem
-statement.  This should be the challenge level agreed on between you and the
-course instructor.  You can use a pull request to update your challenge level
-(in TeamComposition.csv or Repos.csv) if your plan changes as a result of the
-VnV planning exercise.}
-
-\wss{Summarize the extras (if any) that were tackled by this project.  Extras
-can include usability testing, code walkthroughs, user documentation, formal
-proof, GenderMag personas, Design Thinking, etc.  Extras should have already
-been approved by the course instructor as included in your problem statement.
-You can use a pull request to update your extras (in TeamComposition.csv or
-Repos.csv) if your plan changes as a result of the VnV planning exercise.}
+This project is an advanced project as it is the product of research work that will later be submitted for publication in an academic conference/journal.  
 
 \subsection{Relevant Documentation}
-
-\wss{Reference relevant documentation.  This will definitely include your SRS
-  and your other project documents (design documents, like MG, MIS, etc).  You
-  can include these even before they are written, since by the time the project
-  is done, they will be written.  You can create BibTeX entries for your
-  documents and within those entries include a hyperlink to the documents.}
-
-\citet{SRS}
-
-\wss{Don't just list the other documents.  You should explain why they are relevant and 
-how they relate to your VnV efforts.}
+The \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/ProblemStatementAndGoals/ProblemStatement.pdf}{Problem Statement} motivates the program while the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS} provides information about the requirements of the functioning program. The MG and MIS documents contain architecture and design rationale. 
 
 \section{Plan}
+This section outlines the testing plan for the Optimal EM Placement program, starting with the team in Section \ref{team}, followed by the SRS verification plan, design verification plan, VnV verification plan, implementation verification plan, automated testing, ending with verification tools in Section~\ref{ver_tools}.
 
-\wss{Introduce this section.  You can provide a roadmap of the sections to
-  come.}
-
-\subsection{Verification and Validation Team}
-
-\wss{Your teammates.  Maybe your supervisor.
-  You should do more than list names.  You should say what each person's role is
-  for the project's verification.  A table is a good way to summarize this information.}
+\subsection{Verification and Validation Team} \label{team}
+% \begin{table}[]
+%   \begin{tabular}{|c|c|c|c|}
+%     \hline
+%     \rowcolor[HTML]{FFC702} 
+%     Name & Document & Role               & Description                                         \\ \hline
+%     Hussein Saad & All      & Author             & Execution and management of VnV document and tests. \\ \hline
+%     Dr. Spencer Smith & All      & Instructor         & Review all documents.                               \\ \hline
+%     Uriel Cruz & All      & Domain Expert      & Review document and provide technical feedback.     \\ \hline
+%     Alaap Grandhi & VnV      & Secondary Reviewer & Review the VnV plan and suggest improvements.       \\ \hline
+%   \end{tabular}
+% \end{table}
+\begin{center}
+  \includegraphics[scale=0.35]{VnVTeam.PNG} \label{team_table}
+  \captionof{table}{Verification Team}
+\end{center}
 
 \subsection{SRS Verification Plan}
-
-\wss{List any approaches you intend to use for SRS verification.  This may
-  include ad hoc feedback from reviewers, like your classmates (like your
-  primary reviewer), or you may plan for something more rigorous/systematic.}
-
-\wss{If you have a supervisor for the project, you shouldn't just say they will
-read over the SRS.  You should explain your structured approach to the review.
-Will you have a meeting?  What will you present?  What questions will you ask?
-Will you give them instructions for a task-based inspection?  Will you use your
-issue tracker?}
-
-\wss{Maybe create an SRS checklist?}
+The Optimal EM Placement SRS document will be verified solely through ad hoc feedback from reviewers. Document design and alignment with course goals will be reviewed by the instructor (Dr.~Spencer Smith), while more technical details will benefit from the comments of the Domain Expert Reviewer (Uriel Cruz). After the creation/update of the SRS document, reviewers will provide the author with feedback through GitHub issues. The author will implement the suggested changes as necessary.
 
 \subsection{Design Verification Plan}
-
-\wss{Plans for design verification}
-
-\wss{The review will include reviews by your classmates}
-
-\wss{Create a checklists?}
+The design documents, Module Guide (MG) and Module Interface Specification (MIS), will be verified through inspection by reviewers. 
 
 \subsection{Verification and Validation Plan Verification Plan}
-
-\wss{The verification and validation plan is an artifact that should also be
-verified.  Techniques for this include review and mutation testing.}
-
-\wss{The review will include reviews by your classmates}
-
-\wss{Create a checklists?}
+The Verification and Validation Plan will itself be verified primarily through manual reviews by the Instructor, Domain Expert, and Secondary Reviewer.
 
 \subsection{Implementation Verification Plan}
+The implementation of Optimal EM Placement will be verified primarily in two different ways:
+\begin{enumerate}
+  \item \textbf{Code Walkthrough (Static): }Walkthroughs will be performed by the author, domain expert, and secondary reviewer. Copies of the code will be shared with all three team members, who will individually run and interact will the program. This process is followed by a discussion in which members discuss their findings and suggest enhancements. 
+  \item \textbf{Test Cases (Dynamic): }As outlined in Section \ref{sys_tests}, test cases will be executed to verify the function and non-functional requirements mentioned in the SRS. 
+\end{enumerate}
 
-\wss{You should at least point to the tests listed in this document and the unit
-  testing plan.}
+\subsection{Automated Testing and Verification Tools} \label{ver_tools}
+Automated testing as outlined in the previous section will be carried out using the \href{https://docs.pytest.org/en/stable/}{\texttt{PyTest}} library, by comparing expected outputs to calculated outputs given some constant user input. 
 
-\wss{In this section you would also give any details of any plans for static
-  verification of the implementation.  Potential techniques include code
-  walkthroughs, code inspection, static analyzers, etc.}
-
-\wss{The final class presentation in CAS 741 could be used as a code
-walkthrough.  There is also a possibility of using the final presentation (in
-CAS741) for a partial usability survey.}
-
-\subsection{Automated Testing and Verification Tools}
-
-\wss{What tools are you using for automated testing.  Likely a unit testing
-  framework and maybe a profiling tool, like ValGrind.  Other possible tools
-  include a static analyzer, make, continuous integration tools, test coverage
-  tools, etc.  Explain your plans for summarizing code coverage metrics.
-  Linters are another important class of tools.  For the programming language
-  you select, you should look at the available linters.  There may also be tools
-  that verify that coding standards have been respected, like flake9 for
-  Python.}
-
-\wss{If you have already done this in the development plan, you can point to
-that document.}
-
-\wss{The details of this section will likely evolve as you get closer to the
-  implementation.}
-
-\subsection{Software Validation Plan}
-
-\wss{If there is any external data that can be used for validation, you should
-  point to it here.  If there are no plans for validation, you should state that
-  here.}
-
-\wss{You might want to use review sessions with the stakeholder to check that
-the requirements document captures the right requirements.  Maybe task based
-inspection?}
-
-\wss{For those capstone teams with an external supervisor, the Rev 0 demo should 
-be used as an opportunity to validate the requirements.  You should plan on 
-demonstrating your project to your supervisor shortly after the scheduled Rev 0 demo.  
-The feedback from your supervisor will be very useful for improving your project.}
-
-\wss{For teams without an external supervisor, user testing can serve the same purpose 
-as a Rev 0 demo for the supervisor.}
-
-\wss{This section might reference back to the SRS verification section.}
-
-\section{System Tests}
-
-\wss{There should be text between all headings, even if it is just a roadmap of
-the contents of the subsections.}
+\section{System Tests} \label{sys_tests}
 
 \subsection{Tests for Functional Requirements}
+The functional and nonfunctional requirements of the program are given in Sections 5.1 and 5.2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. The relationship between test cases and requirements is given in the traceability matrix in Section \ref{trac_matrix}. Error messages in the tables are abbreviated as in Table \ref{abbrevs}.
 
-\wss{Subsets of the tests may be in related, so this section is divided into
-  different areas.  If there are no identifiable subsets for the tests, this
-  level of document structure can be removed.}
+\subsubsection{Input Tests - Invalid Input}
 
-\wss{Include a blurb here to explain why the subsections below
-  cover the requirements.  References to the SRS would be good here.}
-
-\subsubsection{Area of Testing1}
-
-\wss{It would be nice to have a blurb here to explain why the subsections below
-  cover the requirements.  References to the SRS would be good here.  If a section
-  covers tests for input constraints, you should reference the data constraints
-  table in the SRS.}
 		
-\paragraph{Title for Test}
+\paragraph{Incorrect EM Properties}
+\begin{center}
+  \includegraphics[scale=0.4]{EMInputTable.PNG} \\
+  \captionof{table}{EM properties test cases}
+  \label{emprop}
+\end{center}
 
 \begin{enumerate}
 
-\item{test-id1\\}
+\item{test-em-props-1\dots6\\}
 
-Control: Manual versus Automatic
+Control: Automatic.
 					
-Initial State: 
+Initial State: Pending input.
 					
-Input: 
+Input: Set of input values for EM Properties as given in Table \ref{emprop}.
 					
-Output: \wss{The expected result for the given inputs.  Output is not how you
-are going to return the results of the test.  The output is the expected
-result.}
+Output: An appropriate error message, if necessary, as given in Table \ref{emprop}.
 
-Test Case Derivation: \wss{Justify the expected value given in the Output field}
+Test Case Derivation: These cases test the behaviour of the system when given invalid system related inputs as described in Table 2 of the SRS.
 					
-How test will be performed: 
-					
-\item{test-id2\\}
-
-Control: Manual versus Automatic
-					
-Initial State: 
-					
-Input: 
-					
-Output: \wss{The expected result for the given inputs}
-
-Test Case Derivation: \wss{Justify the expected value given in the Output field}
-
-How test will be performed: 
-
+How test will be performed: Using \texttt{PyTest}. 
 \end{enumerate}
 
-\subsubsection{Area of Testing2}
+\newpage
 
-...
+\paragraph{System Setup}
+\begin{center}
+  \includegraphics[scale=0.4]{SysInputTable.PNG} \\
+  \captionof{table}{System setup test cases}
+  \label{sys_setup_table}
+\end{center}
+
+\begin{enumerate}
+
+  \item{test-sys-setup-1\dots6\\}
+  
+  Control: Automatic.
+            
+  Initial State: Pending input.
+            
+  Input: Set of input values for the system as given in Table \ref{sys_setup_table}.
+            
+  Output: An appropriate error message, if necessary, as given in Table~\ref{sys_setup_table}.
+  
+  Test Case Derivation: These cases test the behaviour of the system when given invalid EM related inputs as described in Table 2 of the SRS.
+            
+  How test will be performed: Using \texttt{PyTest}. 
+\end{enumerate}
+
+\subsubsection{Output Tests - Correct Output}
+\paragraph{Correct Positions Selected}
+\begin{center}
+  \includegraphics[scale=0.4]{OutputTable.PNG} \\
+  \captionof{table}{Output correctness test cases}
+  \label{output_tests_table}
+\end{center}
+
+\begin{enumerate}
+
+  \item{test-output-correct-1\dots2\\}
+  
+  Control: Automatic.
+            
+  Initial State: Pending input.
+            
+  Input: Set of input values for as given in Table~\ref{output_tests_table}.
+            
+  Output: A binary vector $x$, such that the indices shown in Table~\ref{output_tests_table} are 1.
+
+  Note: The above must hold for a set \texttt{numpy} random seed of 100. 
+  
+  Test Case Derivation: These cases ensure the system returns the correct optimal positions based on the inputs it receives. 
+            
+  How test will be performed: Using \texttt{PyTest}. 
+\end{enumerate}
+
+\subsubsection{Intermediate Tests - Intermediate Computations} \label{svd_test}
+\paragraph{Singular Values}
+
+\begin{enumerate}
+
+  \item{test-intmed-svd-1\dots2\\} 
+  
+  Control: Automatic.
+            
+  Initial State: Pending input.
+            
+  Input: Set of input values for as given in Table \ref{output_tests_table}.
+            
+  Output: An array of singular values. 
+  
+  Test Case Derivation: These cases ensure the program is correctly constructing the $\mathcal{U}$ matrix and computing the magnetic field and force values. A description of $\mathcal{U}$ is given in Section 4.2.4 of the SRS.
+            
+  How test will be performed: Using \texttt{PyTest}. 
+\end{enumerate}
 
 \subsection{Tests for Nonfunctional Requirements}
-
-\wss{The nonfunctional requirements for accuracy will likely just reference the
-  appropriate functional tests from above.  The test cases should mention
-  reporting the relative error for these tests.  Not all projects will
-  necessarily have nonfunctional requirements related to accuracy.}
-
-\wss{For some nonfunctional tests, you won't be setting a target threshold for
-passing the test, but rather describing the experiment you will do to measure
-the quality for different inputs.  For instance, you could measure speed versus
-the problem size.  The output of the test isn't pass/fail, but rather a summary
-table or graph.}
-
-\wss{Tests related to usability could include conducting a usability test and
-  survey.  The survey will be in the Appendix.}
-
-\wss{Static tests, review, inspections, and walkthroughs, will not follow the
-format for the tests given below.}
-
-\wss{If you introduce static tests in your plan, you need to provide details.
-How will they be done?  In cases like code (or document) walkthroughs, who will
-be involved? Be specific.}
-
-\subsubsection{Area of Testing1}
-		
-\paragraph{Title for Test}
-
+The 4 nonfunctional requirements for Optimal EM placement is given in Section 5.2 of the SRS. 
+\subsubsection{Accuracy}
 \begin{enumerate}
 
-\item{test-id1\\}
+\item{test-nf-acc\\}
 
-Type: Functional, Dynamic, Manual, Static etc.
+Type: Manual.
 					
-Initial State: 
+Initial State: Pending input.
 					
-Input/Condition: 
+Input: Any set of inputs as given in Table \ref{output_tests_table}.
 					
-Output/Result: 
+Output: The singular values of the $\mathcal{U}$.
 					
-How test will be performed: 
-					
-\item{test-id2\\}
-
-Type: Functional, Dynamic, Manual, Static etc.
-					
-Initial State: 
-					
-Input: 
-					
-Output: 
-					
-How test will be performed: 
-
+How test will be performed: The author will use identical inputs on naïve algorithms and plot a singular value distribution to compare performance, as explained in NF1 of the SRS. This test related to the Singular Values test in \ref{svd_test}.
 \end{enumerate}
 
-\subsubsection{Area of Testing2}
+\subsubsection{Usability}
+\begin{enumerate}
 
-...
+\item{test-nf-use\\}
 
-\subsection{Traceability Between Test Cases and Requirements}
+Type: Manual.
+					
+Initial State: None.
+					
+Input: None.
+					
+Output: None.
+					
+How test will be performed: A group of users will be asked to use the system and attempt to get a solution for their inputs. They will then provide any necessary feedback. 
+\end{enumerate}
 
-\wss{Provide a table that shows which test cases are supporting which
-  requirements.}
+\subsubsection{Maintainability}
+\begin{enumerate}
 
-\section{Unit Test Description}
+\item{test-nf-mtn\\}
+
+Type: Static.
+					
+Initial State: None.
+					
+Input: None.
+					
+Output: None.
+					
+How test will be performed: The author will meet with the Domain Expert Reviewer and Secondary Reviewer to present a code walkthrough and discuss details related to software maintainability. 
+\end{enumerate}
+
+\subsubsection{Portability}
+\begin{enumerate}
+
+\item{test-nf-prt\\}
+
+Type: Manual.
+					
+Initial State: None.
+					
+Input: None.
+					
+Output: None.
+					
+How test will be performed: The author will run the program on a Windows, MacOS and Linux machine. 
+\end{enumerate}
+
+\subsection{Traceability Between Test Cases and Requirements} \label{trac_matrix}
+Traceability between tests and requirements is visualized below:
+\begin{center}
+  \includegraphics[scale=0.4]{TraceabilityMatrix.PNG}
+  \captionof{table}{Traceability between tests and requirements}
+\end{center}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+\newpage
+\section{Unit Test Description} \label{unit_tests}
 
 \wss{This section should not be filled in until after the MIS (detailed design
   document) has been completed.}
@@ -481,7 +454,9 @@ How test will be performed:
 \subsection{Traceability Between Test Cases and Modules}
 
 \wss{Provide evidence that all of the modules have been considered.}
-				
+
+\newpage
+
 \bibliographystyle{plainnat}
 
 \bibliography{../../refs/References}
@@ -500,30 +475,5 @@ Their values are defined in this section for easy maintenance.
 \subsection{Usability Survey Questions?}
 
 \wss{This is a section that would be appropriate for some projects.}
-
-\newpage{}
-\section*{Appendix --- Reflection}
-
-\wss{This section is not required for CAS 741}
-
-The information in this section will be used to evaluate the team members on the
-graduate attribute of Lifelong Learning.
-
-\input{../Reflection.tex}
-
-\begin{enumerate}
-  \item What went well while writing this deliverable? 
-  \item What pain points did you experience during this deliverable, and how
-    did you resolve them?
-  \item What knowledge and skills will the team collectively need to acquire to
-  successfully complete the verification and validation of your project?
-  Examples of possible knowledge and skills include dynamic testing knowledge,
-  static testing knowledge, specific tool usage, Valgrind etc.  You should look to
-  identify at least one item for each team member.
-  \item For each of the knowledge areas and skills identified in the previous
-  question, what are at least two approaches to acquiring the knowledge or
-  mastering the skill?  Of the identified approaches, which will each team
-  member pursue, and why did they make this choice?
-\end{enumerate}
 
 \end{document}
