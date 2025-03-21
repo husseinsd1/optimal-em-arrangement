@@ -46,8 +46,7 @@
 \begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
-Date 1 & 1.0 & Notes\\
-Date 2 & 1.1 & Notes\\
+March 19 & 1.0 & Initial release\\
 \bottomrule
 \end{tabularx}
 
@@ -72,10 +71,10 @@ This section records information for easy reference.
   R & Requirement\\
   SC & Scientific Computing \\
   SRS & Software Requirements Specification\\
-  \progname & Explanation of program name\\
+  EM & Electromagnet \\
+  OEPM & \progname \\
   UC & Unlikely Change \\
-  \wss{etc.} & \wss{...}\\
-  \bottomrule
+    \bottomrule
 \end{tabular}\\
 
 \newpage
@@ -161,12 +160,12 @@ change.
   hardware on which the software is running.
 \item[\refstepcounter{acnum} \actheacnum \label{acInput}:] The format of the
   initial input data.
-\item ...
+\item[\refstepcounter{acnum} \actheacnum \label{acPhysParams}:] The physical constraints on the EM parameters.
+\item[\refstepcounter{acnum} \actheacnum \label{acAlgUpd}:] Updates to the optimization algorithm. 
+\item[\refstepcounter{acnum} \actheacnum \label{acParams}:] Changes to the solver parameters.
+\item[\refstepcounter{acnum} \actheacnum \label{acOutputFormat}:] Modification of output format and/or data type. 
 \end{description}
 
-\wss{Anticipated changes relate to changes that would be made in requirements,
-design or implementation choices.  They are not related to changes that are made
-at run-time, like the values of parameters.}
 
 \subsection{Unlikely Changes} \label{SecUchange}
 
@@ -178,9 +177,11 @@ will potentially need to be modified. Hence, it is not intended that these
 decisions will be changed.
 
 \begin{description}
-\item[\refstepcounter{ucnum} \uctheucnum \label{ucIO}:] Input/Output devices
+\item[\refstepcounter{ucnum} \uctheucnum \label{ucIO}:] I/O devices
   (Input: File and/or Keyboard, Output: File, Memory, and/or Screen).
-\item ...
+  \item[\refstepcounter{ucnum} \uctheucnum \label{ucSolApprox}:] Changing the underlying solenoid approximation model.
+  \item[\refstepcounter{ucnum} \uctheucnum \label{ucFieldForce}:] Magnetic field and force equations.
+  \item[\refstepcounter{ucnum} \uctheucnum \label{ucObjFunc}:] Modifications to the objective function. 
 \end{description}
 
 \section{Module Hierarchy} \label{SecMH}
@@ -192,9 +193,15 @@ actually be implemented.
 
 \begin{description}
 \item [\refstepcounter{mnum} \mthemnum \label{mHH}:] Hardware-Hiding Module
-\item ...
+\item [\refstepcounter{mnum} \mthemnum \label{mConsParams}:] Constant Parameters Module
+\item [\refstepcounter{mnum} \mthemnum \label{mInputParams}:] Input Parameters Module
+\item [\refstepcounter{mnum} \mthemnum \label{mMagField}:] Magnetic Field Module
+\item [\refstepcounter{mnum} \mthemnum \label{mMagForce}:] Magnetic Force Module
+\item [\refstepcounter{mnum} \mthemnum \label{mActMatrix}:] Actuation Matrix Module
+\item [\refstepcounter{mnum} \mthemnum \label{mOptPlacement}:] Optimal Placement Module
+\item [\refstepcounter{mnum} \mthemnum \label{mResults}:] Output Results Module
+\item [\refstepcounter{mnum} \mthemnum \label{mControl}:] Main (Control) Module
 \end{description}
-
 
 \begin{table}[h!]
 \centering
@@ -206,19 +213,17 @@ actually be implemented.
 {Hardware-Hiding Module} & ~ \\
 \midrule
 
-\multirow{7}{0.3\textwidth}{Behaviour-Hiding Module} & ?\\
-& ?\\
-& ?\\
-& ?\\
-& ?\\
-& ?\\
-& ?\\ 
-& ?\\
+\multirow{7}{0.3\textwidth}{Behaviour-Hiding Module} & Constant Parameters Module\\
+& Input Parameters Module\\
+& Magnetic Field Module\\
+& Magnetic Force Module\\
+& Actuation Matrix Module\\
+& Output Results Module\\ 
+& Main (Control) Module\\
 \midrule
 
-\multirow{3}{0.3\textwidth}{Software Decision Module} & {?}\\
-& ?\\
-& ?\\
+\multirow{3}{0.3\textwidth}{Software Decision Module} & \\
+& Optimal Placement Module\\
 \bottomrule
 
 \end{tabular}
@@ -232,12 +237,6 @@ The design of the system is intended to satisfy the requirements developed in
 the SRS. In this stage, the system is decomposed into modules. The connection
 between requirements and modules is listed in Table~\ref{TblRT}.
 
-\wss{The intention of this section is to document decisions that are made
-  ``between'' the requirements and the design.  To satisfy some requirements,
-  design decisions need to be made.  Rather than make these decisions implicit,
-  they are explicitly recorded here.  For instance, if a program has security
-  requirements, a specific design decision may be made to satisfy those
-  requirements with a password.}
 
 \section{Module Decomposition} \label{SecMD}
 
@@ -278,19 +277,62 @@ to be implemented.
 \item[Implemented By:] --
 \end{description}
 
-\subsubsection{Input Format Module (\mref{mInput})}
-
+\subsubsection{Constant Parameters Module (\mref{mConsParams})}
 \begin{description}
-\item[Secrets:]The format and structure of the input data.
-\item[Services:]Converts the input data into the data structure used by the
-  input parameters module.
-\item[Implemented By:] [Your Program Name Here]
-\item[Type of Module:] [Record, Library, Abstract Object, or Abstract Data Type]
-  [Information to include for leaf modules in the decomposition by secrets tree.]
+  \item[Secrets:]The constant parameter values used by the program.
+  \item[Services:]Stores the values of the constant parameters and provides them when needed by other modules.
+  \item[Implemented By:] OEMP
+  \item[Type of Module:] Record
+\end{description}
+%[Record, Library, Abstract Object, or Abstract Data Type]
+
+\subsubsection{Input Parameters Module (\mref{mInputParams})}
+\begin{description}
+  \item[Secrets:]The value of input parameters.
+  \item[Services:]Stores the parameters needed for the program, including EM properties and system setup parameters. 
+  \item[Implemented By:] OEMP
+  \item[Type of Module:] Abstract Object
 \end{description}
 
-\subsubsection{Etc.}
+\subsubsection{Magnetic Field Module (\mref{mMagField})}
+\begin{description}
+  \item[Secrets:]The equation for calculating the magnetic field produced by the EMs at some distance away from them.
+  \item[Services:]Calculates the magnetic field at some point $p$ using the input parameters specified in \mref{mInputParams}. 
+  \item[Implemented By:] OEMP
+  \item[Type of Module:] Abstract Object
+\end{description}
 
+\subsubsection{Magnetic Force Module (\mref{mMagForce})}
+\begin{description}
+  \item[Secrets:]The equation for calculating the magnetic force produced by the EMs at some distance away from them.
+  \item[Services:]Calculates the magnetic force at some point $p$ using the input parameters specified in \mref{mInputParams} and the field values provided by \mref{mMagField}. 
+  \item[Implemented By:] OEMP
+  \item[Type of Module:] Abstract Object
+\end{description}
+
+\subsubsection{Actuation Matrix Module (\mref{mActMatrix})}
+\begin{description}
+  \item[Secrets:]The actuation matrix used to find the optimal EM positions.
+  \item[Services:]Constructs the actuation matrix from the given magnetic field and force values. 
+  \item[Implemented By:] OEMP
+  \item[Type of Module:] Abstract Object
+\end{description}
+
+\subsubsection{Output Results Module (\mref{mResults})}
+\begin{description}
+  \item[Secrets:]The format and content of the output data.
+  \item[Services:]Outputs the results of intermediate calculations and the determined positions. 
+  \item[Implemented By:] OEMP
+  \item[Type of Module:] Abstract Object
+\end{description}
+
+\subsubsection{Main (Control) Module (\mref{mControl})}
+\begin{description}
+  \item[Secrets:]The algorithm responsible for the coordination of flow and control between modules.
+  \item[Services:]Provides the main program. 
+  \item[Implemented By:] OEMP
+  \item[Type of Module:] Abstract Object
+\end{description}
 
 \subsection{Software Decision Module}
 
@@ -305,7 +347,13 @@ to be implemented.
 \item[Implemented By:] --
 \end{description}
 
-\subsubsection{Etc.}
+\subsubsection{Optimal Placement Module (\mref{mOptPlacement})}
+\begin{description}
+  \item[Secrets:]The algorithm that solves the objective function defined in IM2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
+  \item[Services:]Solves the optimal EM placement problem using inputs from \mref{mInputParams} and \mref{mActMatrix}.
+  \item[Implemented By:] \texttt{cvxpy}
+  \item[Type of Module:] Library
+\end{description}
 
 \section{Traceability Matrix} \label{SecTM}
 
@@ -320,17 +368,12 @@ requirements and between the modules and the anticipated changes.
 \toprule
 \textbf{Req.} & \textbf{Modules}\\
 \midrule
-R1 & \mref{mHH}, \mref{mInput}, \mref{mParams}, \mref{mControl}\\
-R2 & \mref{mInput}, \mref{mParams}\\
-R3 & \mref{mVerify}\\
-R4 & \mref{mOutput}, \mref{mControl}\\
-R5 & \mref{mOutput}, \mref{mODEs}, \mref{mControl}, \mref{mSeqDS}, \mref{mSolver}, \mref{mPlot}\\
-R6 & \mref{mOutput}, \mref{mODEs}, \mref{mControl}, \mref{mSeqDS}, \mref{mSolver}, \mref{mPlot}\\
-R7 & \mref{mOutput}, \mref{mEnergy}, \mref{mControl}, \mref{mSeqDS}, \mref{mPlot}\\
-R8 & \mref{mOutput}, \mref{mEnergy}, \mref{mControl}, \mref{mSeqDS}, \mref{mPlot}\\
-R9 & \mref{mVerifyOut}\\
-R10 & \mref{mOutput}, \mref{mODEs}, \mref{mControl}\\
-R11 & \mref{mOutput}, \mref{mODEs}, \mref{mEnergy}, \mref{mControl}\\
+R1 & \mref{mHH}, \mref{mInputParams}, \mref{mControl}\\
+R2 & \mref{mInputParams}, \mref{mControl}\\
+R3 & \mref{mConsParams}, \mref{mMagField}, \mref{mMagForce}\\
+R4 & \mref{mActMatrix}\\
+R5 & \mref{mOptPlacement}\\
+R6 & \mref{mOptPlacement}, \mref{mResults}\\
 \bottomrule
 \end{tabular}
 \caption{Trace Between Requirements and Modules}
@@ -344,17 +387,11 @@ R11 & \mref{mOutput}, \mref{mODEs}, \mref{mEnergy}, \mref{mControl}\\
 \textbf{AC} & \textbf{Modules}\\
 \midrule
 \acref{acHardware} & \mref{mHH}\\
-\acref{acInput} & \mref{mInput}\\
-\acref{acParams} & \mref{mParams}\\
-\acref{acVerify} & \mref{mVerify}\\
-\acref{acOutput} & \mref{mOutput}\\
-\acref{acVerifyOut} & \mref{mVerifyOut}\\
-\acref{acODEs} & \mref{mODEs}\\
-\acref{acEnergy} & \mref{mEnergy}\\
-\acref{acControl} & \mref{mControl}\\
-\acref{acSeqDS} & \mref{mSeqDS}\\
-\acref{acSolver} & \mref{mSolver}\\
-\acref{acPlot} & \mref{mPlot}\\
+\acref{acInput} & \mref{mInputParams}\\
+\acref{acPhysParams} & \mref{mInputParams}\\
+\acref{acAlgUpd} & \mref{mOptPlacement}\\
+\acref{acParams} & \mref{mOptPlacement}\\
+\acref{acOutputFormat} & \mref{mResults}\\
 \bottomrule
 \end{tabular}
 \caption{Trace Between Anticipated Changes and Modules}
@@ -374,38 +411,36 @@ the modules. It can be seen that the graph is a directed acyclic graph
 system, and modules in the higher level of the hierarchy are essentially simpler
 because they use modules from the lower levels.
 
-\wss{The uses relation is not a data flow diagram.  In the code there will often
-be an import statement in module A when it directly uses module B.  Module B
-provides the services that module A needs.  The code for module A needs to be
-able to see these services (hence the import statement).  Since the uses
-relation is transitive, there is a use relation without an import, but the
-arrows in the diagram typically correspond to the presence of import statement.}
-
-\wss{If module A uses module B, the arrow is directed from A to B.}
-
 \begin{figure}[H]
 \centering
-%\includegraphics[width=0.7\textwidth]{UsesHierarchy.png}
+\includegraphics[width=0.7\textwidth]{UsesHierarchy.png}
 \caption{Use hierarchy among modules}
 \label{FigUH}
 \end{figure}
 
-%\section*{References}
-
 \section{User Interfaces}
-
-\wss{Design of user interface for software and hardware.  Attach an appendix if
-needed. Drawings, Sketches, Figma}
-
-\section{Design of Communication Protocols}
-
-\wss{If appropriate}
+The program does interact with any hardware components external to the system it runs on, and it uses the console as its I/O interface with the user. 
 
 \section{Timeline}
+\begin{table}[H]
+\centering
+\begin{tabular}{ m{5em} | m{4cm} } 
+  \textbf{Module(s)}& \textbf{Date of Expected Completion} \\ 
+  \hline
+  \mref{mConsParams}, \mref{mInputParams} & March 22 \\ 
+  \hline
+  \mref{mMagField}, \mref{mMagForce} & March 24 \\ 
+  \hline
+  \mref{mActMatrix} & March 25 \\ 
+  \hline
+  \mref{mOptPlacement}, \mref{mResults} & March 28 \\ 
+  \hline
+  \mref{mControl} & March 29 \\ 
+\end{tabular} 
+\caption{Timeline of Module Development}
+\label{Timeline}
+\end{table}
 
-\wss{Schedule of tasks and who is responsible}
-
-\wss{You can point to GitHub if this information is included there}
 
 \bibliographystyle {plainnat}
 \bibliography{../../../refs/References}

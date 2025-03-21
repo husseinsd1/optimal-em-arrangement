@@ -19,6 +19,7 @@
 \usepackage[section]{placeins}
 \usepackage{caption}
 \usepackage{fullpage}
+\usepackage{dsfont}
 
 \hypersetup{
 bookmarks=true,     % show bookmarks bar?
@@ -53,8 +54,7 @@ urlcolor=cyan          % color of external links
 \begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
-Date 1 & 1.0 & Notes\\
-Date 2 & 1.1 & Notes\\
+March 20, 2025 & 1.0 & Initial Release\\
 \bottomrule
 \end{tabularx}
 
@@ -62,10 +62,7 @@ Date 2 & 1.1 & Notes\\
 
 \section{Symbols, Abbreviations and Acronyms}
 
-See SRS Documentation at \wss{give url}
-
-\wss{Also add any additional symbols, abbreviations or acronyms}
-
+See SRS Documentation at \url{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}
 \newpage
 
 \tableofcontents
@@ -77,17 +74,12 @@ See SRS Documentation at \wss{give url}
 \section{Introduction}
 
 The following document details the Module Interface Specifications for
-\wss{Fill in your project name and description}
+OEMP (Optimal Electromagnet Placement). This document describes, in detail, how the interfaces, assumptions and interactions among the modules of the program. 
 
-Complementary documents include the System Requirement Specifications
-and Module Guide.  The full documentation and implementation can be
-found at \url{...}.  \wss{provide the url for your repo}
+Complementary documents include the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{System Requirement Specifications} and \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftArchitecture/MG.pdf}{Module Guide}. The full documentation and implementation can be
+found at \url{https://github.com/husseinsd1/optimal-em-arrangement}.
 
 \section{Notation}
-
-\wss{You should describe your notation.  You can use what is below as
-  a starting point.}
-
 The structure of the MIS for modules comes from \citet{HoffmanAndStrooper1995},
 with the addition that template modules have been adapted from
 \cite{GhezziEtAl2003}.  The mathematical notation comes from Chapter 3 of
@@ -113,10 +105,10 @@ real & $\mathbb{R}$ & any number in (-$\infty$, $\infty$)\\
 \end{center}
 
 \noindent
-The specification of \progname \ uses some derived data types: sequences, strings, and
-tuples. Sequences are lists filled with elements of the same data type. Strings
+The specification of \progname \ uses some derived data types: sequences, strings,
+tuples, and vectors. Sequences are lists filled with elements of the same data type. Strings
 are sequences of characters. Tuples contain a list of values, potentially of
-different types. In addition, \progname \ uses functions, which
+different types. An $n$-dimensional vector is a list of $n$ real numbers. In addition, \progname \ uses functions, which
 are defined by the data types of their inputs and outputs. Local functions are
 described by giving their type signature followed by their specification.
 
@@ -131,21 +123,20 @@ The following table is taken directly from the Module Guide document for this pr
 \textbf{Level 1} & \textbf{Level 2}\\
 \midrule
 
-{Hardware-Hiding} & ~ \\
+{Hardware-Hiding Module} & ~ \\
 \midrule
 
-\multirow{7}{0.3\textwidth}{Behaviour-Hiding} & Input Parameters\\
-& Output Format\\
-& Output Verification\\
-& Temperature ODEs\\
-& Energy Equations\\ 
-& Control Module\\
-& Specification Parameters Module\\
+\multirow{7}{0.3\textwidth}{Behaviour-Hiding Module} & Constant Parameters Module\\
+& Input Parameters Module\\
+& Magnetic Field Module\\
+& Magnetic Force Module\\
+& Actuation Matrix Module\\
+& Output Results Module\\ 
+& Main (Control) Module\\
 \midrule
 
-\multirow{3}{0.3\textwidth}{Software Decision} & {Sequence Data Structure}\\
-& ODE Solver\\
-& Plotting\\
+\multirow{3}{0.3\textwidth}{Software Decision Module} & \\
+& Optimal Placement Module\\
 \bottomrule
 
 \end{tabular}
@@ -156,32 +147,148 @@ The following table is taken directly from the Module Guide document for this pr
 \newpage
 ~\newpage
 
-\section{MIS of \wss{Module Name}} \label{Module} \wss{Use labels for
-  cross-referencing}
-
-\wss{You can reference SRS labels, such as R\ref{R_Inputs}.}
-
-\wss{It is also possible to use \LaTeX for hypperlinks to external documents.}
-
+\section{MIS of Constant Parameters Module} \label{MISConsParam}
 \subsection{Module}
-
-\wss{Short name for the module}
+ConstantParams
 
 \subsection{Uses}
+None
 
+\subsection{Syntax}
+\subsubsection{Exported Constants}
+\begin{center}
+\begin{tabular}{ c | c | c | c }
+  Label & Symbol & Value & Description \\
+  \hline
+  MU0 & $\mu_0$ & $4\pi \times 10^{-7}$ & Permeability of free space
+\end{tabular}
+\end{center}
+
+\subsubsection{Exported Access Programs}
+None 
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+None
+
+\subsubsection{Environment Variables}
+None
+
+\subsubsection{Assumptions}
+Constant values are assumed immutable. 
+
+\subsubsection{Access Routine Semantics}
+None
+
+\subsubsection{Local Functions}
+None
+
+%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{MIS of Input Parameters Module} \label{MISInpParam}
+
+\subsection{Module}
+params 
+
+\subsection{Uses}
+\begin{itemize}
+  \item Hardware-Hiding Module
+\end{itemize}
 
 \subsection{Syntax}
 
 \subsubsection{Exported Constants}
+None 
 
 \subsubsection{Exported Access Programs}
-
 \begin{center}
-\begin{tabular}{p{2cm} p{4cm} p{4cm} p{2cm}}
+\begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-\wss{accessProg} & - & - & - \\
+\texttt{takeInputs} & - & params of type \texttt{Params} & \texttt{negativeValueError}, \texttt{invalidCurrentError} \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+\texttt{Params} is a data structure used to store the parameter values the user enters into the program. 
+\subsubsection{State Variables}
+params : \texttt{Params} $\:= $ [ \\ 
+$N$ : $\mathbb{N}$, \\
+$I$ : $\mathbb{R}$, \\
+$A$ : $\mathbb{R}$, \\
+$M$ : $\mathbb{N}$, \\
+$K$ : $\mathbb{N}$, \\
+$V$ : $\mathbb{R}$, \\
+$t$ : $\mathbb{R}$, \\
+$m_t$ : $\mathbb{R}$ \\
+] \\
+The description of the elements of the above array is found in Section 1.2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
+
+\subsubsection{Environment Variables}
+\begin{itemize}
+  \item A console: The medium through which the user will enter the parameter values. 
+  \item A keyboard: The module takes input from the user's keyboard. 
+\end{itemize}
+
+\subsubsection{Assumptions}
+None 
+
+\subsubsection{Access Routine Semantics}
+
+\noindent takeInputs():
+\begin{itemize}
+\item transition: 
+\begin{itemize}
+  \item Initialize params : \texttt{Params}. 
+  \item Display prompt for user to enter the value of the parameters, one by one, and raise and exception and re-prompt if the entered value is not in line with the constraints outline in Table 2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. 
+\end{itemize} 
+\item output: params : \texttt{Params} 
+\item exception: exc $\:=$
+\begin{center}
+  \begin{tabular}{p{5cm} p{4cm}}
+  \hline
+  \textbf{Exception} & \textbf{When} \\
+  \hline
+  \texttt{negativeValueError} & When the input for any of the parameters is negative.  \\
+  \hline
+  \texttt{invalidCurrentError} & When the input for the current $I$ is greater than 20000  \\
+  \hline
+  \end{tabular}
+  \end{center}
+\end{itemize}
+
+\subsubsection{Local Functions}
+None
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{MIS of Magnetic Field Module} \label{MISMagField}
+\subsection{Module}
+MagField
+
+\subsection{Uses}
+\begin{itemize}
+  \item Constant Parameters Module
+  \item Input Parameters Module
+\end{itemize}
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+None
+
+\subsubsection{Exported Access Programs}
+\begin{center}
+\begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+calculateField & params of type \texttt{Params} & vector in $\mathbb{R}^3$ & None \\
 \hline
 \end{tabular}
 \end{center}
@@ -189,82 +296,343 @@ The following table is taken directly from the Module Guide document for this pr
 \subsection{Semantics}
 
 \subsubsection{State Variables}
-
-\wss{Not all modules will have state variables.  State variables give the module
-  a memory.}
+None
 
 \subsubsection{Environment Variables}
-
-\wss{This section is not necessary for all modules.  Its purpose is to capture
-  when the module has external interaction with the environment, such as for a
-  device driver, screen interface, keyboard, file, etc.}
+None
 
 \subsubsection{Assumptions}
-
-\wss{Try to minimize assumptions and anticipate programmer errors via
-  exceptions, but for practical purposes assumptions are sometimes appropriate.}
+Assumes the execution of the Input Parameters Module prior to running. 
 
 \subsubsection{Access Routine Semantics}
 
-\noindent \wss{accessProg}():
+\noindent calculateField(params : \texttt{Params}):
 \begin{itemize}
-\item transition: \wss{if appropriate} 
-\item output: \wss{if appropriate} 
-\item exception: \wss{if appropriate} 
+\item transition:
+\begin{itemize}
+  \item Extract necessary parameters ($N, i, A, t$) from params. 
+  \item Calculate and store magnetic moment using the calculateMoment() local function.
+  \item Find the magnetic field with the given parameters, the calculated moment value, and $\mu_0$ from the Constant Parameters Module using the equation defined in TM2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. 
+\end{itemize}
+\item output: This module outputs a real 3D vector describing the magnetic field at some distance $t$ (retrieved from params).
+\item exception: N/A
 \end{itemize}
 
-\wss{A module without environment variables or state variables is unlikely to
-  have a state transition.  In this case a state transition can only occur if
-  the module is changing the state of another module.}
+\subsubsection{Local Functions}
+\textbf{calculateMoment(N : $\mathbb{N}$, i : $\mathbb{R}$, A : $\mathbb{R}$, t : $\mathbb{R}$):} A function to compute the magnetic moment at some distance $t$ as specified in TM1 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
+\begin{itemize}
+  \item output: A magnetic moment vector in $\mathbb{R}^3$
+  \item exception: None
+\end{itemize}
 
-\wss{Modules rarely have both a transition and an output.  In most cases you
-  will have one or the other.}
+\newpage
+%%%%%%%%%%%%%%%%
+
+\section{MIS of Magnetic Force Module} \label{MISMagForce}
+
+\subsection{Module}
+MagForce 
+
+\subsection{Uses}
+\begin{itemize}
+  \item Input Parameters Module 
+  \item Magnetic Field Module
+\end{itemize}
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+None 
+
+\subsubsection{Exported Access Programs}
+\begin{center}
+  \begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
+  \hline
+  \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+  \hline
+  calculateForce & params of type \texttt{Params} & vector in $\mathbb{R}^3$ & None \\
+  \hline
+  \end{tabular}
+  \end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+None
+
+\subsubsection{Environment Variables}
+None
+
+\subsubsection{Assumptions}
+None 
+
+\subsubsection{Access Routine Semantics}
+\noindent calculateForce(params : \texttt{Params}):
+\begin{itemize}
+\item transition: 
+\begin{itemize}
+  \item Invoke and store the magnetic field returned by the Magnetic Field Module. 
+  \item Extract the magnetic moment of the target object from params. 
+  \item Compute the force vector as described in TM3 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}
+\end{itemize}
+\item output: A real 3D vector describing the magnetic force on some target. 
+\item exception: N/A.
+\end{itemize}
 
 \subsubsection{Local Functions}
+None
+\newpage
+%%%%%%%%%%
 
-\wss{As appropriate} \wss{These functions are for the purpose of specification.
-  They are not necessarily something that is going to be implemented
-  explicitly.  Even if they are implemented, they are not exported; they only
-  have local scope.}
+\section{MIS of Actuation Matrix Module} \label{MISActMatrix}
+
+\subsection{Module}
+ActuationMatrix
+
+\subsection{Uses}
+\begin{itemize}
+  \item Input Parameters Module
+  \item Magnetic Field Module
+  \item Magnetic Force Module 
+\end{itemize}
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+None
+
+\subsubsection{Exported Access Programs}
+\begin{center}
+\begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+constructMatrix & params of type \texttt{Params} & vector in $\mathbb{R}^6$ & None \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+None
+
+\subsubsection{Environment Variables}
+None
+
+\subsubsection{Assumptions}
+None 
+
+\subsubsection{Access Routine Semantics}
+
+\noindent constructMatrix(params : \texttt{Params}):
+\begin{itemize}
+\item transition: 
+\begin{itemize}
+  \item Extract parameters from the params argument. 
+  \item Generate a set of random positions (of size $M$ from params) using the local function generatePos.
+  \item For each candidate position, calculate the magnetic force and field vectors using Magnetic Force Module and Magnetic Field Module, respectively. 
+  \item Sum up the force and field vectors of the candidate positions, the result is two 3D vectors. 
+  \item Concatenate the two vectors such that a 6D column vector is formed.
+\end{itemize}
+\item output: A 6D real vector. 
+\item exception: N/A
+\end{itemize}
+
+\subsubsection{Local Functions}
+\textbf{generatePos(M : $\mathbb{N}$}): A function to generate random candidate positions for the EMs. 
+\begin{itemize}
+  \item output: A set of $M$ [x, y, z] coordinates. 
+  \item exception: None
+\end{itemize}
+
+\newpage
+%%%%%%%%%%
+
+
+\section{MIS of Optimal Placement Module} \label{MISOptPlacement}
+
+\subsection{Module}
+FindOptPositions
+
+\subsection{Uses}
+\begin{itemize}
+  \item Actuation Matrix Module 
+  \item Input Parameters Module
+\end{itemize}
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+None
+
+\subsubsection{Exported Access Programs}
+
+\begin{center}
+  \begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
+  \hline
+  \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+  \hline
+  solve & vector in $\mathbb{R}^6$ , params of type \texttt{Params} & binary vector in $\mathbb{R}^M$ & SolverException \\
+  \hline
+  \end{tabular}
+  \end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+None
+
+\subsubsection{Environment Variables}
+None 
+
+\subsubsection{Assumptions}
+None
+
+\subsubsection{Access Routine Semantics}
+
+\noindent solve($\mathcal{U}$ : $\mathbb{R}^6$, params : \texttt{Params}):
+\begin{itemize}
+\item transition: 
+\begin{itemize}
+  \item Compute and store $\mathcal{U} \mathcal{U}^\top$ 
+  \item Extract $M$ and $K$ from params.
+  \item Pass $\mathcal{U} \mathcal{U}^\top$, $M$ and $K$ into a \texttt{cvxpy} solver.
+\end{itemize}
+\item output: A vector $x \in \{ 0, 1 \}^M$ such that:
+\begin{itemize}
+  \item $\mathds{1}_M^\top x = K$ ($\mathds{1}$ is a ones vector).
+  \item $\lambda_{\text{min}}$ of $\sum^K_{i=1} x_i \mathcal{U}_i \mathcal{U}_i^\top$ is maximized. 
+\end{itemize}
+\item exception: Any exceptions raised by the solver.  
+\end{itemize}
+
+\subsubsection{Local Functions}
+None
+
+\newpage
+%%%%%%%%%%%%%%%%
+
+\section{MIS of Output Results Module} \label{MISResults}
+
+\subsection{Module}
+OutputResults 
+
+\subsection{Uses}
+\begin{itemize}
+  \item Hardware-Hiding Module
+  \item Optimal Placement Module 
+\end{itemize}
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+None 
+
+\subsubsection{Exported Access Programs}
+\begin{center}
+\begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+output & $x \in \{0,1\}^M$  & - & None \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+None
+
+\subsubsection{Environment Variables}
+Console: this module prints the vector $x$ onto the console for the user to see.
+
+\subsubsection{Assumptions}
+None
+
+\subsubsection{Access Routine Semantics}
+
+\noindent output($x$ : $\{0,1\}^M$):
+\begin{itemize}
+\item transition: Prints the given vector onto the console. 
+\item output: N/A 
+\item exception: None
+\end{itemize}
+
+\subsubsection{Local Functions}
+None 
+\newpage
+%%%%%%%%%%%%%%%%
+
+\section{MIS of Main (Control) Module} \label{MISControl}
+
+\subsection{Module}
+main 
+
+\subsection{Uses}
+\begin{itemize}
+  \item Hardware-Hiding Module 
+  \item Constant Parameter Module 
+  \item Input Parameters Module 
+  \item Magnetic Field Module 
+  \item Magnetic Force Module 
+  \item Actuation Matrix Module 
+  \item Optimal Placement Module 
+  \item Output Results Module 
+\end{itemize}
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+None 
+\subsubsection{Exported Access Programs}
+\begin{center}
+\begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+main & - & - & Various \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+\begin{itemize}
+  \item params : \texttt{Params}
+  \item $\mathcal{U}$ : $\mathbb{R}^6$
+\end{itemize}
+
+\subsubsection{Environment Variables}
+None 
+
+\subsubsection{Assumptions}
+None 
+
+\subsubsection{Access Routine Semantics}
+
+\noindent main():
+\begin{itemize}
+\item transition: 
+\begin{itemize}
+  \item Call and store params from Input Parameters Module. 
+  \item Invoke the Actuation Matrix Module and store the returned $\mathcal{U}$ vector (Actuation Matrix will itself invoke the modules responsible for the magnetic field/force and constant parameters).
+  \item Provide the $\mathcal{U}$ vector and params to Optimal Placement Module, and store the returned $x$ vector. 
+  \item Pass the returned $x$ vector to Output Results Module. 
+\end{itemize}
+\item output: N/A
+\item exception: Exceptions arising from submodules.
+\end{itemize}
+
+
+\subsubsection{Local Functions}
+None
+%%%%%%%%%%%%
 
 \newpage
 
 \bibliographystyle {plainnat}
 \bibliography {../../../refs/References}
-
-\newpage
-
-\section{Appendix} \label{Appendix}
-
-\wss{Extra information if required}
-
-\newpage{}
-
-\section*{Appendix --- Reflection}
-
-\wss{Not required for CAS 741 projects}
-
-The information in this section will be used to evaluate the team members on the
-graduate attribute of Problem Analysis and Design.
-
-\input{../../Reflection.tex}
-
-\begin{enumerate}
-  \item What went well while writing this deliverable? 
-  \item What pain points did you experience during this deliverable, and how
-    did you resolve them?
-  \item Which of your design decisions stemmed from speaking to your client(s)
-  or a proxy (e.g. your peers, stakeholders, potential users)? For those that
-  were not, why, and where did they come from?
-  \item While creating the design doc, what parts of your other documents (e.g.
-  requirements, hazard analysis, etc), it any, needed to be changed, and why?
-  \item What are the limitations of your solution?  Put another way, given
-  unlimited resources, what could you do to make the project better? (LO\_ProbSolutions)
-  \item Give a brief overview of other design solutions you considered.  What
-  are the benefits and tradeoffs of those other designs compared with the chosen
-  design?  From all the potential options, why did you select the documented design?
-  (LO\_Explores)
-\end{enumerate}
-
-
 \end{document}
