@@ -148,7 +148,9 @@
 \begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
-\today & 1.0 & First draft\\
+April 11, 2025 & 1.1 & Implement Domain Expert suggestions \\
+\midrule
+February 8, 2025 & 1.0 & First draft\\
 \bottomrule
 \end{tabularx}
 
@@ -380,7 +382,7 @@ This section focuses on the general equations and laws that \progname{} is based
     $m = NiA$ \\ 
   \hline
   Description
-    & The above equation calculates the magnetic moment of a solenoid EM.  \\
+    & The above equation calculates the magnetic moment ($\text{A} \cdot m^2$) of a solenoid EM.  \\
   
    & $N$ is the number of turns in the coil.  \\
   
@@ -415,13 +417,13 @@ This section focuses on the general equations and laws that \progname{} is based
   (3 \hat{\bm r} \hat{\bm r}^{\top} - \mathbb{I}) \hat{\bm m}$ \\ 
   \hline
   Description
-    & The magnetic field at some point $\bm p$ can be calculated using the equation above.  \\
+    & The magnetic field (T) at some point $\bm p$ can be calculated using the equation above.  \\
   
    & $\mu_0 = 4\pi \times 10^{-7}$ Tm/A is the permeability of free space.  \\
   
   & $\bm r$ is the position of the point relative to the center of the magnet (m). $\hat{\bm r}$ is the unit vector of $r$.  \\
   
-  & $\bm m$ is the magnetic moment of magnet generating the field (T). \\
+  & $\bm m$ is the magnetic moment of magnet generating the field ($\text{A} \cdot m^2$). \\
   & $\mathbb{I}$ is the identity matrix. \\
   \hline
   Notes & - \\
@@ -452,9 +454,9 @@ This section focuses on the general equations and laws that \progname{} is based
   
    & $\nabla$ is the field gradient.  \\
   
-  & $\bm m$ is the magnetic moment of the object (T).  \\
+  & $\bm m$ is the magnetic moment of the object ($\text{A} \cdot m^2$).  \\
   
-  & $\bm B$ is the magnetic field the object is in. \\
+  & $\bm B$ is the magnetic field the object is in (T). \\
   \hline
   Notes & - \\
   \hline
@@ -647,15 +649,15 @@ uncertainty quantification exercise.
   \textbf{Var} & \textbf{Physical Constraints} & \textbf{Software Constraints} &
                              \textbf{Typical Value} & \textbf{Uncertainty}\\
   \midrule 
-  $N$ & $N > 0$ & $0 < N \leq \text{int}_{\text{max}}$ & 100 & 0\%
+  $N$ & $N > 0$ & $N > 0$ & 100 & 0\%
   \\
   $I$ & $I > 0$ & $0 < I \leq 20000 \text{A}$ & 10A & 10\%
   \\
   $A$ & $A > 0$ & $A > 0$ & 6m$^2$ & 5\%
   \\
-  $M$ & $M > 0$ & $0 < M < \text{int}_\text{max}$ & 10000 & 0\%
+  $M$ & $M > 0$ & $M > 0$ & 10000 & 0\%
   \\
-  $K$ & $0 < K < M$ & $0 < K < \text{int}_\text{max}$ & 8 & 0\%
+  $K$ & $0 < K < M$ & $K > 0$ & 8 & 0\%
   \\
   $V$ & $V > 0$ & $V > 0$ & 1m$^3$ & 0\%
   \\
@@ -693,7 +695,7 @@ qualities that the software is expected to possess.
 
 \noindent \begin{itemize}
 
-\item[R\refstepcounter{reqnum}\thereqnum \label{R_Inputs}:] Provide the inputs specific to EMs (number of turns, cross-sectional area, current), and actuation system (number of samples and actuators, volume) and a target location. 
+\item[R\refstepcounter{reqnum}\thereqnum \label{R_Inputs}:] Load the inputs specific to EMs (number of turns, cross-sectional area, current), and actuation system (number of samples and actuators, volume) and a target location. 
 \item[R\refstepcounter{reqnum}\thereqnum \label{R_InputsSat}:] Verify the given inputs satisfy the constraints in Table~\ref{TblInputVar}.
 \item[R\refstepcounter{reqnum}\thereqnum \label{R_CalculateMag}:] Calculate the magnetic field and forces at the given distance  $t$.
 \item[R\refstepcounter{reqnum}\thereqnum \label{R_CalculateAct}:] Construct the actuation matrix $\mathcal{\bm U}$. 
