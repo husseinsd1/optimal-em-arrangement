@@ -148,6 +148,8 @@
 \begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
+April 12, 2025 & 1.2 & Implement instructor suggestions \\
+\midrule
 April 11, 2025 & 1.1 & Implement Domain Expert suggestions \\
 \midrule
 February 8, 2025 & 1.0 & First draft\\
@@ -229,7 +231,7 @@ $t$ & \si{\metre} & target location
   R & Requirement\\
   SRS & Software Requirements Specification\\
   TM & Theoretical Model\\
-  EM & Electromagnet \\
+  EM & ElectroMagnet \\
   \bottomrule
 \end{tabular}\\
 
@@ -243,10 +245,10 @@ Vectors and matrices are bolded to fit the \hyperlink{https://journals.ieeeautho
 \section{Introduction}
 Microrobots hold immense promise for a variety of clinical and surgical procedures. Their size and wireless
 controllability allow them to navigate complex and tortuous area of the human body with minimal collateral damage. However,
-clinical adoption of these devices is hurdled by complexities in the actuation systems that control them \cite{bozuyuk2024roadmap}. Magnetic actuation is 
+clinical adoption of these devices faces the hurdle of by complexities in the actuation systems that control them \citep{bozuyuk2024roadmap}. Magnetic actuation is 
 perhaps the most common method of manipulating these devices, as magnetic fields can safely penetrate the human body and offer a high level of controllability. Magnetic fields can be generated through either EMs
-or permanent magnets, and while the latter offer higher stronger magnetic fields, EM coils are generally preferred
-because their magnetic field strength can be regulated by adjusting their power input~\cite{hwang2020review}. However, EMs tend to be bulky and can potentially obstruct a clinician's access to the workspace. Even with recent designs that place the actuation system under the operating table, generating magnetic fields large enough to cover a patient-sized workspace remains a challenge. 
+or permanent magnets, and while the latter offer stronger magnetic fields, EM coils are generally preferred
+because their magnetic field strength can be regulated by adjusting their power input~\citep{hwang2020review}. However, EMs tend to be bulky and can potentially obstruct a clinician's access to the workspace. Even with recent designs that place the actuation system under the operating table, generating magnetic fields large enough to cover a patient-sized workspace remains a challenge. 
 
 We propose a convex optimization algorithm to solve the optimal EM arrangement problem for under-the-table actuation systems. Our program solves for the positions of EM actuators that yield the highest system manipulability. 
 
@@ -261,10 +263,10 @@ The scope of the requirements is to present the mathematical models used in dete
 
 
 \subsection{Characteristics of Intended Reader} \label{sec_IntendedReader}
-The Intended Reader of this document must possess an understanding of magnetism at the first-year university level. In addition, a solid foundation in linear algebra at the freshman level is required. The reader should also have cursory knowledge of optimization.
+The Intended Reader of this document must possess an understanding of magnetism at the first-year university level. In addition, a solid foundation in linear algebra at the freshman level is required. The reader should also have cursory knowledge of optimization basics, which are covered in crash-courses available online.
 
 \subsection{Organization of Document}
-The SRS follows a standard pattern of presenting background knowledge, goals, definitions, assumptions, theories, and instance models. Readers who are familiar with the information presented in theoretical models may want to skip to the instance models section and refer back to earlier information as needed. 
+The SRS follows a standard pattern of presenting background knowledge, goals, definitions, assumptions, theories, and instance models as proposed by \citep{SmithAndLai2005,SmithEtAl2007,SmithAndKoothoor2016}. Readers who are familiar with the information presented in theoretical models may want to skip to the instance models section and refer back to earlier information as needed. 
 
 
 \section{General System Description}
@@ -286,7 +288,7 @@ As the system context shows in the below figure, the user, represented by the ci
 \begin{itemize}
 \item User Responsibilities:
 \begin{itemize}
-\item Provide the required input including EM geometry, under-the-table volume, sample size and desired number of EMs. 
+\item Provide the required input including EM geometry, under-the-table dimensions, sample size and desired number of EMs. 
 \item Ensure all inputs are valid.
 \end{itemize}
 \item \progname{} Responsibilities:
@@ -301,7 +303,7 @@ As the system context shows in the below figure, the user, represented by the ci
 The program is typically used in two settings: engineering and scientific research. In engineering, it is primarily used during the planning phase and is not integrated into live systems. Thus, it is neither safety-critical nor mission-critical.
 
 \subsection{User Characteristics} \label{SecUserCharacteristics}
-The end user of the system is expected to be familiar with elementary magnetism concepts. 
+The end user of the system is expected to be familiar with elementary magnetism concepts covered at the freshman science/engineering level. 
 
 \subsection{System Constraints}
 This project has no system constraints. 
@@ -358,10 +360,10 @@ theoretical model by filling in the missing information for the physical system.
 The numbers given in the square brackets refer to the theoretical model [TM],
 general definition [GD], data definition [DD], or instance model [IM], in which the respective assumption is used.
 \begin{itemize}
-\item[A\refstepcounter{assumpnum}\theassumpnum \label{a_current}:] All EMs are receiving the same, constant current. 
-\item[A\refstepcounter{assumpnum}\theassumpnum \label{a_geom}:] All EMs are identical in geometric properties. 
-\item[A\refstepcounter{assumpnum}\theassumpnum \label{a_cyl}:] All EMs are perfectly cylindrical.
-\item[A\refstepcounter{assumpnum}\theassumpnum \label{solenoid_a}:] All EMs follow the solenoid model.
+\item[A\refstepcounter{assumpnum}\theassumpnum \label{a_current}:] All EMs are receiving the same, constant current [\tref{TM_1}, \tref{TM_2}]. 
+\item[A\refstepcounter{assumpnum}\theassumpnum \label{a_geom}:] All EMs are identical in geometric properties [\tref{TM_1}, \tref{TM_2}]. 
+\item[A\refstepcounter{assumpnum}\theassumpnum \label{a_cyl}:] All EMs are perfectly cylindrical [\tref{TM_1}, \tref{TM_2}].
+\item[A\refstepcounter{assumpnum}\theassumpnum \label{solenoid_a}:] All EMs follow the solenoid model [\tref{TM_1}].
 \end{itemize}
 
 \subsubsection{Theoretical Models}\label{sec_theoretical}
@@ -379,10 +381,10 @@ This section focuses on the general equations and laws that \progname{} is based
   Label& \bf Magnetic Moment of a Solenoid\\
   \hline
   Equation &
-    $m = NiA$ \\ 
+    $\bm m = NiA$ \\ 
   \hline
   Description
-    & The above equation calculates the magnetic moment ($\text{A} \cdot m^2$) of a solenoid EM.  \\
+    & The above equation calculates the magnetic moment $\bm m$ ($\text{A} \cdot m^2$) of a solenoid EM.  \\
   
    & $N$ is the number of turns in the coil.  \\
   
@@ -417,11 +419,11 @@ This section focuses on the general equations and laws that \progname{} is based
   (3 \hat{\bm r} \hat{\bm r}^{\top} - \mathbb{I}) \hat{\bm m}$ \\ 
   \hline
   Description
-    & The magnetic field (T) at some point $\bm p$ can be calculated using the equation above.  \\
+    & The magnetic field $\bm B$ (T) at some point $\bm p$ can be calculated using the equation above.  \\
   
    & $\mu_0 = 4\pi \times 10^{-7}$ Tm/A is the permeability of free space.  \\
   
-  & $\bm r$ is the position of the point relative to the center of the magnet (m). $\hat{\bm r}$ is the unit vector of $r$.  \\
+  & $\bm r$ is the position of the point relative to the center of the magnet (m). $\hat{\bm r}$ is the unit vector of $\bm r$.  \\
   
   & $\bm m$ is the magnetic moment of magnet generating the field ($\text{A} \cdot m^2$). \\
   & $\mathbb{I}$ is the identity matrix. \\
@@ -450,7 +452,7 @@ This section focuses on the general equations and laws that \progname{} is based
     $\bm F = \nabla (\bm m \cdot \bm B)$ \\ 
   \hline
   Description
-    & The force experienced by some magnetized object with magnetic moment $m$ can be found as presented.  \\
+    & The force $\bm F$ experienced by some magnetized object with magnetic moment $m$ can be found as presented.  \\
   
    & $\nabla$ is the field gradient.  \\
   
@@ -485,13 +487,13 @@ This section focuses on the general equations and laws that \progname{} is based
   \end{bmatrix}$ \\ 
   \hline
   Description
-    & The relationship between the inputs and outputs of a robotic system can be described by a Jacobian.  \\
+    & The sensitivity of the outputs of a robotic system to changes in input $x$, can be described by a Jacobian $\bm J$.  \\
   
    & $\bm J_{v,w}$ are the Jacobians describing an output $v, w$ respectively.  \\
   \hline
   Notes & - \\
   \hline
-  Sources& Robotic Modeling and Control by Mark Spong. \\
+  Sources& \cite{spong2020robot}. \\
   \hline
   Ref.\ By &  IM\ref{umat} \\
   \hline
@@ -513,14 +515,14 @@ This section focuses on the general equations and laws that \progname{} is based
     $\mu \triangleq \prod_{i=1}^{n} \sigma_i \propto \sqrt{det(\bm J \bm J^\top)}$ \\ 
   \hline
   Description
-    & The manipulability of a robotic system is given by the product of singular values of its Jacobian. \\
+    & The manipulability $\mu$ of a robotic system is given by the product of singular values of its Jacobian. \\
   
    & $\sigma_i$ is the $i$-th singular value of the system.  \\
    & $\bm J$ is the Jacobian of the system with respect to some input.  \\
   \hline
   Notes & - \\
   \hline
-  Sources& Robotic Modeling and Control by Mark Spong. \\
+  Sources& \cite{spong2020robot}. \\
   \hline
   Ref.\ By &  IM\ref{obj_fun} \\
   \hline
@@ -568,7 +570,7 @@ Symbol &$\mu_0$\\
 This section transforms the problem defined in Section~\ref{Sec_pd} into 
 one which is expressed in mathematical terms. It uses concrete symbols defined 
 in Section~\ref{sec_datadef} to replace the abstract symbols in the models 
-identified in Sections~\ref{sec_theoretical}. The goal G~\ref{G_1} is solved by IM~\ref{obj_fun}. 
+identified in Sections~\ref{sec_theoretical}. The goal G\ref{G_1} is solved by IM\ref{obj_fun}. 
 
 ~\newline
 
@@ -583,12 +585,18 @@ Number& IM\refstepcounter{instnum}\theinstnum \label{umat}\\
 \hline
 Label &\bf Actuation Matrix \\
 \hline
+Input& $\bm B$, $\bm F$  \\
+\hline
+Output& $\begin{bmatrix}
+  \bm B \\ \bm F
+\end{bmatrix}$ $\in$ $\mathbb{R}^{6 \times 1}$ \\
+\hline
 Equation&$ \mathcal{\bm U} = \begin{bmatrix}
   \bm B \\ \bm F
 \end{bmatrix}$  \\
 \hline
 Description &
-The actuation matrix is an example of a Jacobian manipulator the relies on Magnetic field and Force values. 
+The actuation matrix $\mathcal{U}$ is an example of a Jacobian manipulator the describes the sensitivity of magnetic field and force values. 
 \\
 & $\bm B$ and $\bm F$ are the matrices containing magnetic field and force values.
 \\
@@ -618,7 +626,8 @@ The actuation matrix is an example of a Jacobian manipulator the relies on Magne
   Output& $\bm x \in \{0,1\}^K$ s.t. $\bm 1_M^\top \bm x = K$ and $f(x) = \sum_{i=1}^{K}\bm x_i \bm U_i \bm U_i^\top$ is maximized \\
   \hline
   Description&$\mathcal{\bm U}$ is the actuation matrix.\\
-  &$M$ and $K$ are the sample size and desired number of EMs.
+  &$M$ and $K$ are the sample size and desired number of EMs. \\
+  &$\bm x$ is the binary that indicates which EM positions were selected.
   \\
   \hline
   Sources& - \\
@@ -651,7 +660,7 @@ uncertainty quantification exercise.
   \midrule 
   $N$ & $N > 0$ & $N > 0$ & 100 & 0\%
   \\
-  $I$ & $I > 0$ & $0 < I \leq 20000 \text{A}$ & 10A & 10\%
+  $I$ & $I > 0$ & $0 < I \leq \text{MAXCURR}$ & 10A & 10\%
   \\
   $A$ & $A > 0$ & $A > 0$ & 6m$^2$ & 5\%
   \\
@@ -685,7 +694,7 @@ A correct solution must exhibit the properties stated in Table~\ref{TblOutputVar
 \end{longtable*}
 \end{table}
 
-
+\newpage 
 \section{Requirements}
 This section provides the functional requirements, the tasks that the
 software is expected to complete, and the non-functional requirements, the
@@ -709,11 +718,10 @@ Due to the reasons stated in Section~\ref{Sec_SysContext}, there need not be an 
 \begin{itemize}
 
 \item[NFR\refstepcounter{nfrnum}\thenfrnum \label{NFR_Accuracy}:]
-  \textbf{Accuracy} The minimum singular value returned by the program must be greater than that returned by some naïve algorithms (random, greedy). 
+  \textbf{Accuracy} The minimum singular value returned by the program must be greater than that returned by the random and greedy solutions. 
 
 \item[NFR\refstepcounter{nfrnum}\thenfrnum \label{NFR_Usability}:] \textbf{Usability}
-    A user with the background described in Section~\ref{SecUserCharacteristics} should 
-    have understand the physical implications of the computations performed by the program e.g. EM positions, field and force values, etc. 
+    A user with the background described in Section~\ref{SecUserCharacteristics} should understand the physical implications of the computations performed by the program e.g. EM positions, field and force values, etc., as described in Section 4.2.2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/VnVPlan/VnVPlan.pdf}{VnV Plan}. 
 
 \item[NFR\refstepcounter{nfrnum}\thenfrnum \label{NFR_Maintainability}:]
   \textbf{Maintainability} The effort required to make any of the likely
@@ -725,7 +733,7 @@ Due to the reasons stated in Section~\ref{Sec_SysContext}, there need not be an 
 \end{itemize}
 
 \subsection{Rationale}
-The program is designed for use in the preliminary stages of EM actuation system development. Typically, users will run it once or a few times before advancing to the physical development phase. 
+The program is designed for use in the preliminary stages of EM actuation system development. Typically, users will run it once or a few times before advancing to the physical development phase. EMs are assumed to be identical in properties to reduce the complexity of our formulation and implementation, as well as to remain consistent with the actuation system designs used in current literature. The cylindrical assumption is made since modeling the EM's shape in detail will over-complicate our equations but add little to the accuracy of our program. The solenoid model is chosen as it is a simple method to calculate all the information required for the solution.  
 
 \section{Likely Changes}    
 \noindent
@@ -818,7 +826,7 @@ IM\ref{obj_fun}    & X&X & & \\
 \newpage
 
 \section{Values of Auxiliary Constants}
-Not applicable.
+MAXCURR = 20000A.
 
 \newpage
 
