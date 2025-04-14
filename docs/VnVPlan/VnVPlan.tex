@@ -55,6 +55,8 @@
 \begin{tabularx}{\textwidth}{p{3.5cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
+April 13, 2025 & 1.1 & Implement domain expert suggestions\\
+\midrule
 February 23, 2025 & 1.0 & Initial draft\\
 \bottomrule
 \end{tabularx}
@@ -134,7 +136,7 @@ The Verification and Validation Plan will itself be verified primarily through m
 \subsection{Implementation Verification Plan}
 The implementation of Optimal EM Placement will be verified primarily in two different ways:
 \begin{enumerate}
-  \item \textbf{Code Walkthrough (Static): }Walkthroughs will be performed by the author, domain expert, and secondary reviewer. Copies of the code will be shared with all three team members, who will individually run and interact will the program. This process is followed by a discussion in which members discuss their findings and suggest enhancements. 
+  \item \textbf{Code Walkthrough (Static): }Walkthroughs will be performed by the author, domain expert, and secondary reviewer. Copies of the code will be shared with all three team members, who will individually run and interact with the program. This process is followed by a discussion in which members discuss their findings and suggest enhancements. 
   \item \textbf{Test Cases (Dynamic): }As outlined in Section \ref{sys_tests}, test cases will be executed to verify the function and non-functional requirements mentioned in the SRS. 
 \end{enumerate}
 
@@ -144,7 +146,9 @@ Automated testing as outlined in the previous section will be carried out using 
 \section{System Tests} \label{sys_tests}
 
 \subsection{Tests for Functional Requirements}
-The functional and nonfunctional requirements of the program are given in Sections 5.1 and 5.2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. The relationship between test cases and requirements is given in the traceability matrix in Section \ref{trac_matrix}. Error messages in the tables are abbreviated as in Table \ref{abbrevs}.
+The functional and nonfunctional requirements of the program are given in Sections 5.1 and 5.2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. The relationship between test cases and requirements is given in the traceability matrix in Section \ref{trac_matrix}. \\ \\
+\noindent \emph{Error codes in Table \ref{emprop} are explained in Section \ref{abbrevs} of the document.}
+
 
 \subsubsection{Input Tests - Invalid Input}
 
