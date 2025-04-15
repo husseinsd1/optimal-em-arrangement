@@ -55,6 +55,8 @@
 \begin{tabularx}{\textwidth}{p{3.5cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
+April 15, 2025 & 1.2 & Implement  instructor suggestions\\
+\midrule
 April 13, 2025 & 1.1 & Implement domain expert suggestions\\
 \midrule
 February 23, 2025 & 1.0 & Initial draft\\
@@ -80,6 +82,7 @@ February 23, 2025 & 1.0 & Initial draft\\
   SRS & Software Requirements Specification \\
   PV & Positive value required \\
   TL & Input parameter too large \\
+  IT & Invalid type \\
   \bottomrule
   \label{abbrevs}
 \end{tabular}\\
@@ -102,7 +105,7 @@ The main purpose of this document is to define how validation will be performed 
 This project is an advanced project as it is the product of research work that will later be submitted for publication in an academic conference/journal.  
 
 \subsection{Relevant Documentation}
-The \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/ProblemStatementAndGoals/ProblemStatement.pdf}{Problem Statement} motivates the program while the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS} provides information about the requirements of the functioning program. The MG and MIS documents contain architecture and design rationale. 
+The \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/ProblemStatementAndGoals/ProblemStatement.pdf}{Problem Statement} motivates the program while the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS} provides information about the requirements of the functioning program. The \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftArchitecture/MG.pdf}{MG} and \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS} documents contain architecture and design rationale. 
 
 \section{Plan}
 This section outlines the testing plan for the Optimal EM Placement program, starting with the team in Section \ref{team}, followed by the SRS verification plan, design verification plan, VnV verification plan, implementation verification plan, automated testing, ending with verification tools in Section~\ref{ver_tools}.
@@ -120,23 +123,23 @@ This section outlines the testing plan for the Optimal EM Placement program, sta
 %   \end{tabular}
 % \end{table}
 \begin{center}
-  \includegraphics[scale=0.35]{VnVTeam.PNG} \label{team_table}
+  \includegraphics[scale=0.36]{VnVTeam.PNG} \label{team_table}
   \captionof{table}{Verification Team}
 \end{center}
 
 \subsection{SRS Verification Plan}
-The Optimal EM Placement SRS document will be verified solely through ad hoc feedback from reviewers. Document design and alignment with course goals will be reviewed by the instructor (Dr.~Spencer Smith), while more technical details will benefit from the comments of the Domain Expert Reviewer (Uriel Cruz). After the creation/update of the SRS document, reviewers will provide the author with feedback through GitHub issues. The author will implement the suggested changes as necessary.
+The Optimal EM Placement SRS document will be verified primarily through ad hoc feedback from reviewers. Document design and alignment with course goals will be reviewed by the instructor (Dr.~Spencer Smith), while more technical details will benefit from the comments of the Domain Expert Reviewer (Uriel Cruz) and the External Reviewer (Dr.~Matthew Giamou). After the creation/update of the SRS document, reviewers will provide the author with feedback through GitHub issues. The author will implement the suggested changes as necessary. In addition, the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Checklists/SRS-Checklist.pdf}{SRS checklist} created by Dr.~Smith will be used to be used to verify that the document adheres to all specified criteria. Consequently, both reviewer feedback and the checklist will ensure that the SRS meets the necessary technical and design standards.
 
 \subsection{Design Verification Plan}
-The design documents, Module Guide (MG) and Module Interface Specification (MIS), will be verified through inspection by reviewers. 
+The design documents, Module Guide (MG) and Module Interface Specification (MIS), will be verified through inspection by reviewers. The \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Checklists/MG-Checklist.pdf}{MG checklist} and \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Checklists/MIS-Checklist.pdf}{MIS checklist} by Dr.~Smith will serve as a reference for reviewers. 
 
 \subsection{Verification and Validation Plan Verification Plan}
-The Verification and Validation Plan will itself be verified primarily through manual reviews by the Instructor, Domain Expert, and Secondary Reviewer.
+The Verification and Validation Plan will itself be verified primarily through manual reviews by the Instructor, Domain Expert, and Secondary Reviewer. Reviewers will compare the document against the criteria specified by Dr~.Smith in the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Checklists/VnV-Checklist.pdf}{VnV checklist}.
 
 \subsection{Implementation Verification Plan}
 The implementation of Optimal EM Placement will be verified primarily in two different ways:
 \begin{enumerate}
-  \item \textbf{Code Walkthrough (Static): }Walkthroughs will be performed by the author, domain expert, and secondary reviewer. Copies of the code will be shared with all three team members, who will individually run and interact with the program. This process is followed by a discussion in which members discuss their findings and suggest enhancements. 
+  \item \textbf{Code Walkthrough (Static): }Walkthroughs will be performed by the author, domain expert, and secondary reviewer. The reviewers will run and interact with the program, checking for bugs and vulnerabilities in the code. Static analysis tools like \href{https://github.com/pylint-dev/pylint}{\texttt{Pylint}} can be used to examine the code for smells and potential refactoring opportunities. This process is followed by a discussion in which members discuss their findings and suggest enhancements.  
   \item \textbf{Test Cases (Dynamic): }As outlined in Section \ref{sys_tests}, test cases will be executed to verify the function and non-functional requirements mentioned in the SRS. 
 \end{enumerate}
 
@@ -155,7 +158,7 @@ The functional and nonfunctional requirements of the program are given in Sectio
 		
 \paragraph{Incorrect EM Properties}
 \begin{center}
-  \includegraphics[scale=0.4]{EMInputTable.PNG} \\
+  \includegraphics[scale=0.6]{EMInputTable.PNG} \\
   \captionof{table}{EM properties test cases}
   \label{emprop}
 \end{center}
@@ -179,9 +182,35 @@ How test will be performed: Using \texttt{PyTest}.
 
 \newpage
 
+\paragraph{Invalid Input Type}
+\begin{center}
+  \includegraphics[scale=0.5]{InvTypeTable.PNG} \\
+  \captionof{table}{Input type test cases}
+  \label{inp_type_table}
+\end{center}
+
+\begin{enumerate}
+
+  \item{test-inp-type-1\dots5\\}
+  
+  Control: Automatic.
+            
+  Initial State: Pending input.
+            
+  Input: Set of input values for the system as given in Table \ref{inp_type_table}.
+            
+  Output: An appropriate error message, if necessary, as given in Table~\ref{inp_type_table}.
+  
+  Test Case Derivation: These cases test the behaviour of the system when given invalid input types, based on what is described in the SRS.
+            
+  How test will be performed: Using \texttt{PyTest}. 
+\end{enumerate}
+
+\newpage
+
 \paragraph{System Setup}
 \begin{center}
-  \includegraphics[scale=0.4]{SysInputTable.PNG} \\
+  \includegraphics[scale=0.49]{SysInputTable.PNG} \\
   \captionof{table}{System setup test cases}
   \label{sys_setup_table}
 \end{center}
@@ -203,10 +232,12 @@ How test will be performed: Using \texttt{PyTest}.
   How test will be performed: Using \texttt{PyTest}. 
 \end{enumerate}
 
+\newpage
+
 \subsubsection{Output Tests - Correct Output}
 \paragraph{Correct Positions Selected}
 \begin{center}
-  \includegraphics[scale=0.4]{OutputTable.PNG} \\
+  \includegraphics[scale=0.5]{OutputTable.PNG} \\
   \captionof{table}{Output correctness test cases}
   \label{output_tests_table}
 \end{center}
@@ -221,9 +252,9 @@ How test will be performed: Using \texttt{PyTest}.
             
   Input: Set of input values for as given in Table~\ref{output_tests_table}.
             
-  Output: A binary vector $x$, such that the indices shown in Table~\ref{output_tests_table} are 1.
+  Output: A binary vector $x$, such that the values at the indices shown in Table~\ref{output_tests_table} are 1. An value equalling 1 at an index, indicates an EM actuator taking the pose at that index.
 
-  Note: The above must hold for a set \texttt{numpy} random seed of 100. 
+  Note: The above must hold for a set of randomly generated poses with a \texttt{numpy} random seed of 100. 
   
   Test Case Derivation: These cases ensure the system returns the correct optimal positions based on the inputs it receives. 
             
@@ -241,11 +272,11 @@ How test will be performed: Using \texttt{PyTest}.
             
   Initial State: Pending input.
             
-  Input: Set of input values for as given in Table \ref{output_tests_table}.
+  Input: Set of input values as given in Table \ref{output_tests_table}.
             
-  Output: An array of singular values. 
+  Output: $2.82 \times 10^{-4}$, $7.16 \times 10^{-4}$ for test-intmed-svd-1 and test-intmed-svd-2 respectively. These values correspond to the lowest singular value of the $\mathcal{U}$ matrix described in Section 4.2.4 of the SRS.
   
-  Test Case Derivation: These cases ensure the program is correctly constructing the $\mathcal{U}$ matrix and computing the magnetic field and force values. A description of $\mathcal{U}$ is given in Section 4.2.4 of the SRS.
+  Test Case Derivation: These cases ensure the program is correctly constructing the $\mathcal{U}$ matrix and computing the magnetic field and force values. 
             
   How test will be performed: Using \texttt{PyTest}. 
 \end{enumerate}
@@ -261,11 +292,11 @@ Type: Manual.
 					
 Initial State: Pending input.
 					
-Input: Any set of inputs as given in Table \ref{output_tests_table}.
+Input: Various.
 					
-Output: The singular values of the $\mathcal{U}$.
+Output: An array of lowest singular values from 100 runs.
 					
-How test will be performed: The author will use identical inputs on naïve algorithms and plot a singular value distribution to compare performance, as explained in NF1 of the SRS. This test related to the Singular Values test in \ref{svd_test}.
+How test will be performed: The author will use various parameters on the OEMP, greedy and random algorithms, and plot a singular value distribution from the 100 runs to compare performance, as explained in NF1 of the SRS. This test related to the Singular Values test in \ref{svd_test}. The average minimum singular value across OEMP runs must be at least 50\% greater than that of greedy runs. 
 \end{enumerate}
 
 \subsubsection{Usability}
@@ -281,7 +312,8 @@ Input: None.
 					
 Output: None.
 					
-How test will be performed: A group of users will be asked to use the system and attempt to get a solution for their inputs. They will then provide any necessary feedback. 
+How test will be performed: A group of users will be asked to use the system and attempt to get a solution for their inputs. They will then answer the questions provided in the \hyperref[use_survey]{Usability Survey}. An average score of 7 or above indicates the user found the program satisfactorily usable.
+
 \end{enumerate}
 
 \subsubsection{Maintainability}
@@ -297,7 +329,7 @@ Input: None.
 					
 Output: None.
 					
-How test will be performed: The author will meet with the Domain Expert Reviewer and Secondary Reviewer to present a code walkthrough and discuss details related to software maintainability. 
+How test will be performed: The author will meet with the Domain Expert Reviewer and Secondary Reviewer to present a code walkthrough and discuss details related to software maintainability, in particular: the modularity of the code, the comprehensiveness of the test cases, and the consistency of formatting. 
 \end{enumerate}
 
 \subsubsection{Portability}
@@ -313,7 +345,7 @@ Input: None.
 					
 Output: None.
 					
-How test will be performed: The author will run the program on a Windows, MacOS and Linux machine. 
+How test will be performed: The author will manually run all tests listed in this document on a Windows, MacOS and Linux machine. 
 \end{enumerate}
 
 \subsection{Traceability Between Test Cases and Requirements} \label{trac_matrix}
@@ -476,8 +508,14 @@ This is where you can place additional information.
 The definition of the test cases will call for SYMBOLIC\_CONSTANTS.
 Their values are defined in this section for easy maintenance.
 
-\subsection{Usability Survey Questions?}
-
-\wss{This is a section that would be appropriate for some projects.}
+\subsection{Usability Survey Questions} \label{use_survey}
+Answer the following questions one a scale of 1 to 10 (where 1 is ``very poor'' and 10 is ``excellent''):
+\begin{itemize}
+  \item How easy was it to understand and use the program's input fields?
+  \item How useful are the error messages or feedback provided when an incorrect input is given?
+  \item How would you rate the overall flow between input and output interactions during your usage?
+  \item How clear and helpful is the output produced by the program?
+  \item How satisfied are you with the overall interaction experience of the program?
+\end{itemize}
 
 \end{document}
