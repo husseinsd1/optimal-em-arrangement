@@ -54,6 +54,8 @@ urlcolor=cyan          % color of external links
 \begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
+April 16, 2025 & 1.1 & Implement domain expert suggestions\\
+\midrule
 March 20, 2025 & 1.0 & Initial Release\\
 \bottomrule
 \end{tabularx}
@@ -310,7 +312,7 @@ Assumes the execution of the Input Parameters Module prior to running.
 \begin{itemize}
 \item transition:
 \begin{itemize}
-  \item Extract necessary parameters ($N, i, A, t$) from params. 
+  \item Extract necessary parameters ($N, I, A, t$) from params. 
   \item Calculate and store magnetic moment using the calculateMoment() local function.
   \item Find the magnetic field with the given parameters, the calculated moment value, and $\mu_0$ from the Constant Parameters Module using the equation defined in TM2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. 
 \end{itemize}
@@ -319,7 +321,7 @@ Assumes the execution of the Input Parameters Module prior to running.
 \end{itemize}
 
 \subsubsection{Local Functions}
-\textbf{calculateMoment(N : $\mathbb{N}$, i : $\mathbb{R}$, A : $\mathbb{R}$, t : $\mathbb{R}$):} A function to compute the magnetic moment at some distance $t$ as specified in TM1 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
+\textbf{calculateMoment(N : $\mathbb{N}$, I : $\mathbb{R}$, A : $\mathbb{R}$, t : $\mathbb{R}$):} A function to compute the magnetic moment at some distance $t$ as specified in TM1 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
 \begin{itemize}
   \item output: A magnetic moment vector in $\mathbb{R}^3$
   \item exception: None
@@ -407,7 +409,7 @@ None
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-constructMatrix & params of type \texttt{Params} & vector in $\mathbb{R}^6$ & None \\
+constructMatrix & params of type \texttt{Params} & in $\mathbb{R}^6$ & None \\
 \hline
 \end{tabular}
 \end{center}
@@ -433,9 +435,9 @@ None
   \item Generate a set of random positions (of size $M$ from params) using the local function generatePos.
   \item For each candidate position, calculate the magnetic force and field vectors using Magnetic Force Module and Magnetic Field Module, respectively. 
   \item Sum up the force and field vectors of the candidate positions, the result is two 3D vectors. 
-  \item Concatenate the two vectors such that a 6D column vector is formed.
+  \item Concatenate the two vectors such that a $6 \times 1$ matrix is formed.
 \end{itemize}
-\item output: A 6D real vector. 
+\item output: A $6 \times 1$ real matrix. 
 \item exception: N/A
 \end{itemize}
 
