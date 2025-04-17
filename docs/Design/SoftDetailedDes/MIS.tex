@@ -54,6 +54,8 @@ urlcolor=cyan          % color of external links
 \begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
+April 16, 2025 & 1.3 & Implement instructor suggestions\\
+\midrule
 April 16, 2025 & 1.2 & Add moment and pose modules\\
 \midrule
 April 16, 2025 & 1.1 & Implement domain expert suggestions\\
@@ -163,12 +165,14 @@ None
 \subsection{Syntax}
 \subsubsection{Exported Constants}
 \begin{center}
-\begin{tabular}{ c | c | c | c }
-  Label & Symbol & Value & Description \\
-  \hline
-  MU0 & $\mu_0$ & $4\pi \times 10^{-7}$ & Permeability of free space
-\end{tabular}
-\end{center}
+  \begin{tabular}{ >{\raggedright\arraybackslash}p{4cm} | c | c | p{6cm} }
+    \textbf{Label} & \textbf{Symbol} & \textbf{Value} & \textbf{Description} \\
+    \hline
+    MU0 & $\mu_0$ & $4\pi\times10^{-7}$ & Permeability of free space \\
+    \hline
+    MAX\_CURR & $I_{\max}$ & $20000$ & Maximum EM current allowed
+  \end{tabular}
+  \end{center}
 
 \subsubsection{Exported Access Programs}
 None 
@@ -261,7 +265,7 @@ None
   \hline
   \texttt{negativeValueError} & When the input for any of the parameters is negative.  \\
   \hline
-  \texttt{invalidCurrentError} & When the input for the current $I$ is greater than 20000  \\
+  \texttt{invalidCurrentError} & When the input for the current $I$ is greater than $I_{max}$  \\
   \hline
   \end{tabular}
   \end{center}
@@ -344,7 +348,7 @@ None
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-calculateField & params of type \texttt{Params} & vector in $\mathbb{R}^3$ & None \\
+calculateField & params of type \texttt{Params} & $\mathbb{R}^3$ & None \\
 \hline
 \end{tabular}
 \end{center}
@@ -364,18 +368,18 @@ Assumes the execution of the Input Parameters Module prior to running.
 
 \noindent calculateField(params : \texttt{Params}):
 \begin{itemize}
-\item transition:
+\item transition: N/A.
+\item output: This module outputs a real 3D vector describing the magnetic field at some distance $t$ (retrieved from params), by doing the following:
 \begin{itemize}
   \item Extract necessary parameters ($N, I, A, t$) from params. 
   \item Calculate and store magnetic moment using the calculateMoment() local function.
   \item Find the magnetic field with the given parameters, the calculated moment value, and $\mu_0$ from the Constant Parameters Module using the equation defined in TM2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. 
 \end{itemize}
-\item output: This module outputs a real 3D vector describing the magnetic field at some distance $t$ (retrieved from params).
 \item exception: N/A
 \end{itemize}
 
 \subsubsection{Local Functions}
-\textbf{calculateMoment(N : $\mathbb{N}$, I : $\mathbb{R}$, A : $\mathbb{R}$, t : $\mathbb{R}$):} A function to compute the magnetic moment at some distance $t$ as specified in TM1 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
+\textbf{calculateMoment}(N : $\mathbb{N}$, I : $\mathbb{R}$, A : $\mathbb{R}$, t : $\mathbb{R}$): A function to compute the magnetic moment at some distance $t$ as specified in TM1 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
 \begin{itemize}
   \item output: A magnetic moment vector in $\mathbb{R}^3$
   \item exception: None
@@ -406,7 +410,7 @@ None
   \hline
   \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
   \hline
-  calculateForce & params of type \texttt{Params} & vector in $\mathbb{R}^3$ & None \\
+  calculateForce & params of type \texttt{Params} & $\mathbb{R}^3$ & None \\
   \hline
   \end{tabular}
   \end{center}
@@ -425,13 +429,13 @@ None
 \subsubsection{Access Routine Semantics}
 \noindent calculateForce(params : \texttt{Params}):
 \begin{itemize}
-\item transition: 
+\item transition: N/A.
+\item output: A real 3D vector describing the magnetic force on some target, calculated by the following procedure:
 \begin{itemize}
   \item Invoke and store the magnetic field returned by the Magnetic Field Module. 
   \item Extract the magnetic moment of the target object from params. 
   \item Compute the force vector as described in TM3 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}
-\end{itemize}
-\item output: A real 3D vector describing the magnetic force on some target. 
+\end{itemize} 
 \item exception: N/A.
 \end{itemize}
 
@@ -516,7 +520,7 @@ None
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-constructMatrix & params of type \texttt{Params} & in $\mathbb{R}^6$ & None \\
+constructMatrix & params of type \texttt{Params} & $\mathbb{R}^6$ & None \\
 \hline
 \end{tabular}
 \end{center}
@@ -536,7 +540,8 @@ None
 
 \noindent constructMatrix(params : \texttt{Params}):
 \begin{itemize}
-\item transition: 
+\item transition: N/A.
+\item output: A $6 \times 1$ real matrix constructed through the following steps:
 \begin{itemize}
   \item Extract parameters from the params argument. 
   \item Generate a set of random positions (of size $M$ from params) using the local function generatePos.
@@ -544,7 +549,6 @@ None
   \item Sum up the force and field vectors of the candidate positions, the result is two 3D vectors. 
   \item Concatenate the two vectors such that a $6 \times 1$ matrix is formed.
 \end{itemize}
-\item output: A $6 \times 1$ real matrix. 
 \item exception: N/A
 \end{itemize}
 
@@ -602,16 +606,17 @@ None
 
 \noindent solve($\mathcal{U}$ : $\mathbb{R}^6$, params : \texttt{Params}):
 \begin{itemize}
-\item transition: 
-\begin{itemize}
-  \item Compute and store $\mathcal{U} \mathcal{U}^\top$ 
-  \item Extract $M$ and $K$ from params.
-  \item Pass $\mathcal{U} \mathcal{U}^\top$, $M$ and $K$ into a \texttt{cvxpy} solver.
-\end{itemize}
+\item transition: N/A.
 \item output: A vector $x \in \{ 0, 1 \}^M$ such that:
 \begin{itemize}
   \item $\mathds{1}_M^\top x = K$ ($\mathds{1}$ is a ones vector).
   \item $\lambda_{\text{min}}$ of $\sum^K_{i=1} x_i \mathcal{U}_i \mathcal{U}_i^\top$ is maximized. 
+\end{itemize}
+The vector is found by applying the following:
+\begin{itemize}
+  \item Compute and store $\mathcal{U} \mathcal{U}^\top$ 
+  \item Extract $M$ and $K$ from params.
+  \item Pass $\mathcal{U} \mathcal{U}^\top$, $M$ and $K$ into a \texttt{cvxpy} solver.
 \end{itemize}
 \item exception: Any exceptions raised by the solver.  
 \end{itemize}
