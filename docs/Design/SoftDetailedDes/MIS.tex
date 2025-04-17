@@ -200,7 +200,7 @@ None
 \section{MIS of Input Parameters Module} \label{MISInpParam}
 
 \subsection{Module}
-params 
+InputParams 
 
 \subsection{Uses}
 \begin{itemize}
@@ -218,7 +218,7 @@ None
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-\texttt{takeInputs} & - & params of type \texttt{Params} & \texttt{negativeValueError}, \texttt{invalidCurrentError} \\
+\texttt{loadParams} & String & params of type \texttt{Params} & \texttt{fileNotFound}, \texttt{inputError} \\
 \hline
 \end{tabular}
 \end{center}
@@ -233,8 +233,10 @@ $A$ : $\mathbb{R}$, \\
 $M$ : $\mathbb{N}$, \\
 $K$ : $\mathbb{N}$, \\
 $V$ : $\mathbb{R}$, \\
-$t$ : $\mathbb{R}$, \\
-$m_t$ : $\mathbb{R}$ \\
+$t$ : $\mathbb{R}^3$, \\
+$m_t$ : $\mathbb{R}^3$ \\
+$l$ : $\mathbb{R}$ \\
+$em_l$ : $\mathbb{R}$ \\
 ] \\
 The description of the elements of the above array is found in Section 1.2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
 
@@ -253,8 +255,8 @@ None
 \begin{itemize}
 \item transition: 
 \begin{itemize}
-  \item Initialize params : \texttt{Params}. 
-  \item Display prompt for user to enter the value of the parameters, one by one, and raise and exception and re-prompt if the entered value is not in line with the constraints outline in Table 2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. 
+  \item Display prompt (on the console) for user to enter the config file path. 
+  \item Extract parameters from file and use them to create an instance of \texttt{Params}.
 \end{itemize} 
 \item output: params : \texttt{Params} 
 \item exception: exc $\:=$
@@ -263,9 +265,9 @@ None
   \hline
   \textbf{Exception} & \textbf{When} \\
   \hline
-  \texttt{negativeValueError} & When the input for any of the parameters is negative.  \\
+  \texttt{fileNotFound} & When no JSON file is found at the given path.  \\
   \hline
-  \texttt{invalidCurrentError} & When the input for the current $I$ is greater than $I_{max}$  \\
+  \texttt{inputError} & When any of the inputs does not satisfy the constraints given in Table 2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}  \\
   \hline
   \end{tabular}
   \end{center}
@@ -296,7 +298,7 @@ None
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-calculateMoment & $N$ : $\mathbb{N}$, $I$ : $\mathbb{R}$, $A$ : $\mathbb{R}$  & in $\mathbb{R}$ & None \\
+calculateMoment & $N$ : $\mathbb{N}$, $I$ : $\mathbb{R}$, $A$ : $\mathbb{R}$  & $\mathbb{R}$ & None \\
 \hline
 \end{tabular}
 \end{center}
@@ -334,7 +336,6 @@ MagField
 \subsection{Uses}
 \begin{itemize}
   \item Constant Parameters Module
-  \item Input Parameters Module
 \end{itemize}
 
 \subsection{Syntax}
@@ -348,7 +349,7 @@ None
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-calculateField & params of type \texttt{Params} & $\mathbb{R}^3$ & None \\
+calculateField & $m$ : $\mathbb{R}$, $t$ : $\mathbb{R}^3$, $p$ : $\mathbb{R}^3$, $R$ : $\mathbb{R}^{3 \times 3}$ & $\mathbb{R}^3$ & None \\
 \hline
 \end{tabular}
 \end{center}
@@ -362,28 +363,24 @@ None
 None
 
 \subsubsection{Assumptions}
-Assumes the execution of the Input Parameters Module prior to running. 
+None 
 
 \subsubsection{Access Routine Semantics}
 
-\noindent calculateField(params : \texttt{Params}):
+\noindent calculateField($m$ : $\mathbb{R}$, $t$ : $\mathbb{R}^3$, $p$ : $\mathbb{R}^3$, $R$ : $\mathbb{R}^{3 \times 3}$):
 \begin{itemize}
 \item transition: N/A.
 \item output: This module outputs a real 3D vector describing the magnetic field at some distance $t$ (retrieved from params), by doing the following:
 \begin{itemize}
-  \item Extract necessary parameters ($N, I, A, t$) from params. 
-  \item Calculate and store magnetic moment using the calculateMoment() local function.
-  \item Find the magnetic field with the given parameters, the calculated moment value, and $\mu_0$ from the Constant Parameters Module using the equation defined in TM2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. 
+  \item Calculate the vector $r$ by subtracting $t - p$. 
+  \item Find $\hat{r} = \frac{r}{|| r ||}$ 
+  \item Find the magnetic field with the given parameters, the calculated $r$ and $\hat{r}$ vectors, and $\mu_0$ from the Constant Parameters Module using the equation defined in TM2 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}. 
 \end{itemize}
 \item exception: N/A
 \end{itemize}
 
 \subsubsection{Local Functions}
-\textbf{calculateMoment}(N : $\mathbb{N}$, I : $\mathbb{R}$, A : $\mathbb{R}$, t : $\mathbb{R}$): A function to compute the magnetic moment at some distance $t$ as specified in TM1 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
-\begin{itemize}
-  \item output: A magnetic moment vector in $\mathbb{R}^3$
-  \item exception: None
-\end{itemize}
+None
 
 \newpage
 %%%%%%%%%%%%%%%%
@@ -394,10 +391,7 @@ Assumes the execution of the Input Parameters Module prior to running.
 MagForce 
 
 \subsection{Uses}
-\begin{itemize}
-  \item Input Parameters Module 
-  \item Magnetic Field Module
-\end{itemize}
+None
 
 \subsection{Syntax}
 
@@ -410,7 +404,7 @@ None
   \hline
   \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
   \hline
-  calculateForce & params of type \texttt{Params} & $\mathbb{R}^3$ & None \\
+  calculateForce &  $B$ : $\mathbb{R}^{3 \times 3}$, $m_t$ : $\mathbb{R}^{3 \times 3}$ & $\mathbb{R}^3$ & None \\
   \hline
   \end{tabular}
   \end{center}
@@ -427,15 +421,10 @@ None
 None 
 
 \subsubsection{Access Routine Semantics}
-\noindent calculateForce(params : \texttt{Params}):
+\noindent calculateForce($B$ : $\mathbb{R}^{3 \times 3}$, $m_t$ : $\mathbb{R}^{3 \times 3}$):
 \begin{itemize}
 \item transition: N/A.
-\item output: A real 3D vector describing the magnetic force on some target, calculated by the following procedure:
-\begin{itemize}
-  \item Invoke and store the magnetic field returned by the Magnetic Field Module. 
-  \item Extract the magnetic moment of the target object from params. 
-  \item Compute the force vector as described in TM3 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}
-\end{itemize} 
+\item output: A real 3D vector describing the magnetic force on some target, calculated using the formula in TM3 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}
 \item exception: N/A.
 \end{itemize}
 
@@ -504,7 +493,6 @@ ActuationMatrix
 
 \subsection{Uses}
 \begin{itemize}
-  \item Input Parameters Module
   \item Magnetic Field Module
   \item Magnetic Force Module 
 \end{itemize}
@@ -520,7 +508,7 @@ None
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-constructMatrix & params of type \texttt{Params} & $\mathbb{R}^6$ & None \\
+constructMatrix & poses : Array, $m$ : $\mathbb{R}$, $m_t$ : $\mathbb{R}^3$, $t$ : $\mathbb{R}^3$  & $\mathbb{R}^6$ & None \\
 \hline
 \end{tabular}
 \end{center}
@@ -538,26 +526,20 @@ None
 
 \subsubsection{Access Routine Semantics}
 
-\noindent constructMatrix(params : \texttt{Params}):
+\noindent constructMatrix(poses : Array, $m$ : $\mathbb{R}$, $m_t$ : $\mathbb{R}^3$, $t$ : $\mathbb{R}^3$):
 \begin{itemize}
 \item transition: N/A.
 \item output: A $6 \times 1$ real matrix constructed through the following steps:
 \begin{itemize}
-  \item Extract parameters from the params argument. 
-  \item Generate a set of random positions (of size $M$ from params) using the local function generatePos.
-  \item For each candidate position, calculate the magnetic force and field vectors using Magnetic Force Module and Magnetic Field Module, respectively. 
-  \item Sum up the force and field vectors of the candidate positions, the result is two 3D vectors. 
+  \item For each position ($p$) and rotation ($R$) in poses, calculate the magnetic force and field vectors using Magnetic Force Module and Magnetic Field Module, respectively. 
+  \item Sum up the force and field vectors of all poses. The is two 3D vectors. 
   \item Concatenate the two vectors such that a $6 \times 1$ matrix is formed.
 \end{itemize}
 \item exception: N/A
 \end{itemize}
 
 \subsubsection{Local Functions}
-\textbf{generatePos(M : $\mathbb{N}$}): A function to generate random candidate positions for the EMs. 
-\begin{itemize}
-  \item output: A set of $M$ [x, y, z] coordinates. 
-  \item exception: None
-\end{itemize}
+None
 
 \newpage
 %%%%%%%%%%
@@ -569,10 +551,7 @@ None
 FindOptPositions
 
 \subsection{Uses}
-\begin{itemize}
-  \item Actuation Matrix Module 
-  \item Input Parameters Module
-\end{itemize}
+None
 
 \subsection{Syntax}
 
@@ -586,7 +565,7 @@ None
   \hline
   \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
   \hline
-  solve & vector in $\mathbb{R}^6$ , params of type \texttt{Params} & binary vector in $\mathbb{R}^M$ & SolverException \\
+  solve & $M$ : $\mathbb{N}$, $K$ : $\mathbb{N}$, $\mathcal{U}$ : $\mathbb{R}^{6}$, poses : Array, $em_l$ : $\mathbb{R}$ & binary vector in $\mathbb{R}^M$ & SolverException \\
   \hline
   \end{tabular}
   \end{center}
@@ -604,7 +583,7 @@ None
 
 \subsubsection{Access Routine Semantics}
 
-\noindent solve($\mathcal{U}$ : $\mathbb{R}^6$, params : \texttt{Params}):
+\noindent solve($\mathbb{N}$, $K$ : $\mathbb{N}$, $\mathcal{U}$ : $\mathbb{R}^{6}$, poses : Array, $em_l$ : $\mathbb{R}$):
 \begin{itemize}
 \item transition: N/A.
 \item output: A vector $x \in \{ 0, 1 \}^M$ such that:
@@ -615,7 +594,6 @@ None
 The vector is found by applying the following:
 \begin{itemize}
   \item Compute and store $\mathcal{U} \mathcal{U}^\top$ 
-  \item Extract $M$ and $K$ from params.
   \item Pass $\mathcal{U} \mathcal{U}^\top$, $M$ and $K$ into a \texttt{cvxpy} solver.
 \end{itemize}
 \item exception: Any exceptions raised by the solver.  
@@ -635,7 +613,6 @@ OutputResults
 \subsection{Uses}
 \begin{itemize}
   \item Hardware-Hiding Module
-  \item Optimal Placement Module 
 \end{itemize}
 
 \subsection{Syntax}
@@ -649,7 +626,7 @@ None
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-output & $x \in \{0,1\}^M$  & - & None \\
+output & $x \in \{0,1\}^M$, $K$ : $\mathbb{N}$, poses : Array  & - & None \\
 \hline
 \end{tabular}
 \end{center}
@@ -660,16 +637,20 @@ output & $x \in \{0,1\}^M$  & - & None \\
 None
 
 \subsubsection{Environment Variables}
-Console: this module prints the vector $x$ onto the console for the user to see.
+Console: this module prints elements of $x$ and poses onto the console for the user to see.
 
 \subsubsection{Assumptions}
 None
 
 \subsubsection{Access Routine Semantics}
 
-\noindent output($x$ : $\{0,1\}^M$):
+\noindent output($x \in \{0,1\}^M$, $K$ : $\mathbb{N}$, poses : Array):
 \begin{itemize}
-\item transition: Prints the given vector onto the console. 
+\item transition: 
+\begin{itemize}
+  \item Prints the vector $x$ onto the console. 
+  \item Prints the poses corresponding to the selected (= 1) indices in $x$. 
+\end{itemize}
 \item output: N/A 
 \item exception: None
 \end{itemize}
@@ -694,6 +675,8 @@ main
   \item Actuation Matrix Module 
   \item Optimal Placement Module 
   \item Output Results Module 
+  \item Magnetic Moment Module 
+  \item Generate Poses Module 
 \end{itemize}
 
 \subsection{Syntax}
@@ -716,7 +699,10 @@ main & - & - & Various \\
 \subsubsection{State Variables}
 \begin{itemize}
   \item params : \texttt{Params}
+  \item moment : $\mathbb{R}$
+  \item poses : Array
   \item $\mathcal{U}$ : $\mathbb{R}^6$
+  \item $x \in \{0, 1 \}^{M}$
 \end{itemize}
 
 \subsubsection{Environment Variables}
@@ -732,6 +718,8 @@ None
 \item transition: 
 \begin{itemize}
   \item Call and store params from Input Parameters Module. 
+  \item Store the magnetic moment calculated using the Magnetic Moment Module. 
+  \item Generate and store poses using the Generate Poses Module.   
   \item Invoke the Actuation Matrix Module and store the returned $\mathcal{U}$ vector (Actuation Matrix will itself invoke the modules responsible for the magnetic field/force and constant parameters).
   \item Provide the $\mathcal{U}$ vector and params to Optimal Placement Module, and store the returned $x$ vector. 
   \item Pass the returned $x$ vector to Output Results Module. 
