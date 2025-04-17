@@ -54,6 +54,8 @@ urlcolor=cyan          % color of external links
 \begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
+April 16, 2025 & 1.2 & Add moment and pose modules\\
+\midrule
 April 16, 2025 & 1.1 & Implement domain expert suggestions\\
 \midrule
 March 20, 2025 & 1.0 & Initial Release\\
@@ -130,8 +132,10 @@ The following table is taken directly from the Module Guide document for this pr
 
 \multirow{7}{0.3\textwidth}{Behaviour-Hiding Module} & Constant Parameters Module\\
 & Input Parameters Module\\
+& Magnetic Moment Module\\
 & Magnetic Field Module\\
 & Magnetic Force Module\\
+& Generate Poses Module\\
 & Actuation Matrix Module\\
 & Output Results Module\\ 
 & Main (Control) Module\\
@@ -269,6 +273,56 @@ None
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%
 
+
+\section{MIS of Magnetic Moment Module} \label{MISMagMoment}
+\subsection{Module}
+MagMoment
+
+\subsection{Uses}
+None
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+None
+
+\subsubsection{Exported Access Programs}
+\begin{center}
+\begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+calculateMoment & $N$ : $\mathbb{N}$, $I$ : $\mathbb{R}$, $A$ : $\mathbb{R}$  & in $\mathbb{R}$ & None \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+None
+
+\subsubsection{Environment Variables}
+None
+
+\subsubsection{Assumptions}
+None 
+
+\subsubsection{Access Routine Semantics}
+
+\noindent calculateMoment($N$ : $\mathbb{N}$, $I$ : $\mathbb{R}$, $A$ : $\mathbb{R}$):
+\begin{itemize}
+\item transition: N/A
+\item output: The result of using the given inputs in the magnetic moment formula described in TM1 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/SRS/SRS.pdf}{SRS}.
+\item exception: N/A
+\end{itemize}
+
+\subsubsection{Local Functions}
+None
+
+\newpage
+%%%%%%%%%%%%%%
+
 \section{MIS of Magnetic Field Module} \label{MISMagField}
 \subsection{Module}
 MagField
@@ -385,6 +439,59 @@ None
 None
 \newpage
 %%%%%%%%%%
+
+\section{MIS of Generate Poses Module} \label{MISGenPoses}
+\subsection{Module}
+GeneratePoses
+
+\subsection{Uses}
+None
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+None
+
+\subsubsection{Exported Access Programs}
+\begin{center}
+\begin{tabular}{p{3cm} p{4cm} p{4cm} p{3cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+generatePoses & $M$ : $\mathbb{N}$, $l$ : $\mathbb{R}$ & array of $M$ pairs & None \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+None
+
+\subsubsection{Environment Variables}
+None
+
+\subsubsection{Assumptions}
+None 
+
+\subsubsection{Access Routine Semantics}
+
+\noindent generatePoses($M$ : $\mathbb{N}$, $l$ : $\mathbb{R}$):
+\begin{itemize}
+\item transition: N/A
+\item output: An $M$ sized array of random poses, each generated with the \texttt{generatePose} function defined below.
+\item exception: N/A
+\end{itemize}
+
+\subsubsection{Local Functions}
+\textbf{generatePose}($l$ : $\mathbb{R}$): A function to generate a single random pose.
+\begin{itemize}
+  \item output: A random 3D coordinate within the under-the-table space, and a 3D rotation matrix.
+  \item exception: None
+\end{itemize}
+
+\newpage
+%%%%%%%%%%%%%%
 
 \section{MIS of Actuation Matrix Module} \label{MISActMatrix}
 
