@@ -1,0 +1,10 @@
+pytest -q
+.....................                                                                                                                                                             [100%]
+=================================================================================== warnings summary ====================================================================================
+tests/test_intermediate_vals.py::test_lowest_eig[test-output-correct-1-test_params0]
+tests/test_intermediate_vals.py::test_lowest_eig[test-output-correct-2-test_params1]
+  user/cas741-oemp/tests/test_intermediate_vals.py:41: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    assert pytest.approx(expected_eig, rel=1e-3) == float(lowest_eig), f"Expected lowest eigenval to be {expected_eig}, got {lowest_eig}"
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+21 passed, 2 warnings in 27.55s

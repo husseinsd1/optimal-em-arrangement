@@ -1,0 +1,17 @@
+setup.py
+cas741_oemp.egg-info/PKG-INFO
+cas741_oemp.egg-info/SOURCES.txt
+cas741_oemp.egg-info/dependency_links.txt
+cas741_oemp.egg-info/top_level.txt
+tests/ActuationMatrix.py
+tests/ConstantParams.py
+tests/GeneratePoses.py
+tests/MagneticField.py
+tests/MagneticForce.py
+tests/MagneticMoment.py
+tests/OptimalPlacement.py
+tests/OutputResults.py
+tests/__init__.py
+tests/test_input_params.py
+tests/test_intermediate_vals.py
+tests/test_output.py
