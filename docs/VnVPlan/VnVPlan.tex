@@ -55,6 +55,8 @@
 \begin{tabularx}{\textwidth}{p{3.5cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
+April 16, 2025 & 1.3 & Change output test cases\\
+\midrule
 April 15, 2025 & 1.2 & Implement  instructor suggestions\\
 \midrule
 April 13, 2025 & 1.1 & Implement domain expert suggestions\\
@@ -237,7 +239,7 @@ How test will be performed: Using \texttt{PyTest}.
 \subsubsection{Output Tests - Correct Output}
 \paragraph{Correct Positions Selected}
 \begin{center}
-  \includegraphics[scale=0.5]{OutputTable.PNG} \\
+  \includegraphics[scale=0.4]{OutputTable.PNG} \\
   \captionof{table}{Output correctness test cases}
   \label{output_tests_table}
 \end{center}
@@ -254,7 +256,7 @@ How test will be performed: Using \texttt{PyTest}.
             
   Output: A binary vector $x$, such that the values at the indices shown in Table~\ref{output_tests_table} are 1. An value equalling 1 at an index, indicates an EM actuator taking the pose at that index.
 
-  Note: The above must hold for a set of randomly generated poses with a \texttt{numpy} random seed of 100. 
+  Note: The above must hold for a set of randomly generated poses with a \texttt{numpy} \texttt{default\_rng} of 123. 
   
   Test Case Derivation: These cases ensure the system returns the correct optimal positions based on the inputs it receives. 
             
@@ -274,14 +276,14 @@ How test will be performed: Using \texttt{PyTest}.
             
   Input: Set of input values as given in Table \ref{output_tests_table}.
             
-  Output: $2.82 \times 10^{-4}$, $7.16 \times 10^{-4}$ for test-intmed-svd-1 and test-intmed-svd-2 respectively. These values correspond to the lowest singular value of the $\mathcal{U}$ matrix described in Section 4.2.4 of the SRS.
+  Output: Approximately $11242$, $32600$ for test-intmed-svd-1 and test-intmed-svd-2 respectively. These values correspond to the lowest singular value of the $\mathcal{U}$ matrix described in Section 4.2.4 of the SRS.
   
   Test Case Derivation: These cases ensure the program is correctly constructing the $\mathcal{U}$ matrix and computing the magnetic field and force values. 
             
   How test will be performed: Using \texttt{PyTest}. 
 \end{enumerate}
 
-\subsection{Tests for Nonfunctional Requirements}
+\subsection{Tests for Nonfunctional Requirements} \label{test_nfr}
 The 4 nonfunctional requirements for Optimal EM placement is given in Section 5.2 of the SRS. 
 \subsubsection{Accuracy}
 \begin{enumerate}
@@ -367,129 +369,39 @@ Traceability between tests and requirements is visualized below:
 
 \newpage
 \section{Unit Test Description} \label{unit_tests}
-
-\wss{This section should not be filled in until after the MIS (detailed design
-  document) has been completed.}
-
-\wss{Reference your MIS (detailed design document) and explain your overall
-philosophy for test case selection.}  
-
-\wss{To save space and time, it may be an option to provide less detail in this section.  
-For the unit tests you can potentially layout your testing strategy here.  That is, you 
-can explain how tests will be selected for each module.  For instance, your test building 
-approach could be test cases for each access program, including one test for normal behaviour 
-and as many tests as needed for edge cases.  Rather than create the details of the input 
-and output here, you could point to the unit testing code.  For this to work, you code 
-needs to be well-documented, with meaningful names for all of the tests.}
+OEMP source code contains the following modules:
+\begin{itemize}
+  \item ConstantParams.py - corresponds to Section 6 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item InputParameters.py corresponds to Section 7 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item MagneticMoment.py - corresponds to Section 8 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item MagneticField.py - corresponds to Section 9 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item MagneticForce.py - corresponds to Section 10 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item GeneratePoses.py - corresponds to Section 11 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item ActuationMatrix.py - corresponds to Section 12 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item OptimalPlacement.py - corresponds to Section 13 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item OutputResults.py - corresponds to Section 14 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+  \item Main.py - corresponds to Section 15 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}.
+\end{itemize}
 
 \subsection{Unit Testing Scope}
+Unit testing will be performed for the following modules: 
+\begin{itemize}
+  \item InputParameters.py 
+  \item ActuationMatrix.py
+\end{itemize}
+These are high priority modules that are fundamental to the correct and successful execution of the program. The correctness of the ActuationMatrix.py module corresponds to the correctness of the MagneticMoment.py, MagneticField.py and MagneticForce.py modules (see Section 12.4.4 of the \href{https://github.com/husseinsd1/optimal-em-arrangement/blob/main/docs/Design/SoftDetailedDes/MIS.pdf}{MIS}). Higher-level modules (e.g. OptimalPlacement.py) rely on complex solver behavior and will be validated at the system-test level. Other low-level modules like ConstantParams.py, GeneratePoses.py and OutputResults.py perform trivial procedures, some using external libraries (e.g. Numpy, SciPy), and need not be unit tested. 
 
-\wss{What modules are outside of the scope.  If there are modules that are
-  developed by someone else, then you would say here if you aren't planning on
-  verifying them.  There may also be modules that are part of your software, but
-  have a lower priority for verification than others.  If this is the case,
-  explain your rationale for the ranking of module importance.}
 
 \subsection{Tests for Functional Requirements}
-
-\wss{Most of the verification will be through automated unit testing.  If
-  appropriate specific modules can be verified by a non-testing based
-  technique.  That can also be documented in this section.}
-
-\subsubsection{Module 1}
-
-\wss{Include a blurb here to explain why the subsections below cover the module.
-  References to the MIS would be good.  You will want tests from a black box
-  perspective and from a white box perspective.  Explain to the reader how the
-  tests were selected.}
-
-\begin{enumerate}
-
-\item{test-id1\\}
-
-Type: \wss{Functional, Dynamic, Manual, Automatic, Static etc. Most will
-  be automatic}
-					
-Initial State: 
-					
-Input: 
-					
-Output: \wss{The expected result for the given inputs}
-
-Test Case Derivation: \wss{Justify the expected value given in the Output field}
-
-How test will be performed: 
-					
-\item{test-id2\\}
-
-Type: \wss{Functional, Dynamic, Manual, Automatic, Static etc. Most will
-  be automatic}
-					
-Initial State: 
-					
-Input: 
-					
-Output: \wss{The expected result for the given inputs}
-
-Test Case Derivation: \wss{Justify the expected value given in the Output field}
-
-How test will be performed: 
-
-\item{...\\}
-    
-\end{enumerate}
-
-\subsubsection{Module 2}
-
-...
+Not applicable as all modules are directly or indirectly tested through system or unit tests. 
 
 \subsection{Tests for Nonfunctional Requirements}
-
-\wss{If there is a module that needs to be independently assessed for
-  performance, those test cases can go here.  In some projects, planning for
-  nonfunctional tests of units will not be that relevant.}
-
-\wss{These tests may involve collecting performance data from previously
-  mentioned functional tests.}
-
-\subsubsection{Module ?}
-		
-\begin{enumerate}
-
-\item{test-id1\\}
-
-Type: \wss{Functional, Dynamic, Manual, Automatic, Static etc. Most will
-  be automatic}
-					
-Initial State: 
-					
-Input/Condition: 
-					
-Output/Result: 
-					
-How test will be performed: 
-					
-\item{test-id2\\}
-
-Type: Functional, Dynamic, Manual, Static etc.
-					
-Initial State: 
-					
-Input: 
-					
-Output: 
-					
-How test will be performed: 
-
-\end{enumerate}
-
-\subsubsection{Module ?}
-
-...
+Not applicable. Empirically verifiable non-functional requirements are tested through system tests (see Section \ref{test_nfr}).
 
 \subsection{Traceability Between Test Cases and Modules}
+Traceability between test cases and modules is given below:
 
-\wss{Provide evidence that all of the modules have been considered.}
+
 
 \newpage
 
